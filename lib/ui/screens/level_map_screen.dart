@@ -4,7 +4,7 @@ import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:google_fonts/google_fonts.dart';
 import '../../core/managers/game_manager.dart';
-import '../../core/managers/banner_ad_widget.dart';
+// import '../../core/managers/banner_ad_widget.dart';
 import 'game_screen.dart';
 import '../../core/managers/audio_manager.dart';
 

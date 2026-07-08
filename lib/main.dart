@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
 import 'core/managers/game_manager.dart';
 import 'ui/screens/splash_screen.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'core/managers/ad_manager.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'core/managers/ad_manager.dart';
 import 'core/managers/audio_manager.dart';
 
 void main() async {

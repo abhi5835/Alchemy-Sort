@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../game/alchemy_game.dart';
 import '../dialogs/win_dialog.dart';
 import '../../core/managers/game_manager.dart';
-import '../../core/managers/banner_ad_widget.dart';
+// import '../../core/managers/banner_ad_widget.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/managers/audio_manager.dart';
 
