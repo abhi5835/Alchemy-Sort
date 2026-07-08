@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../game/alchemy_game.dart';
 import '../../core/managers/game_manager.dart';
 import '../../core/managers/ad_manager.dart';
+import '../../core/managers/audio_manager.dart';
 
 class WinDialog extends StatelessWidget {
   final AlchemyGame game;
@@ -32,6 +33,7 @@ class WinDialog extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                AudioManager().playButtonClick();
                 final gameManager = GameManager();
                 gameManager.unlockNextLevel();
                 gameManager.nextLevel();
@@ -39,11 +41,12 @@ class WinDialog extends StatelessWidget {
                 game.overlays.remove('WinDialog');
 
                 // Show Interstitial Ad then load next level
-                AdManager().showInterstitialAd(
-                  onAdDismissed: () {
-                    game.world.loadNextLevel();
-                  },
-                );
+                // AdManager().showInterstitialAd(
+                //   onAdDismissed: () {
+                //     game.world.loadNextLevel();
+                //   },
+                // );
+                game.world.loadNextLevel();
               },
               child: Text(
                 'Next Level',

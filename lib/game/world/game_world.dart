@@ -11,6 +11,7 @@ import '../../core/managers/game_manager.dart';
 import '../systems/pour_system.dart';
 import '../systems/win_check_system.dart';
 import '../alchemy_game.dart';
+import '../../core/managers/audio_manager.dart';
 
 class GameWorld extends World with HasGameReference<AlchemyGame> {
   late final PourSystem _pourSystem;
@@ -265,6 +266,7 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     if (WinCheckSystem.checkWin(_tubes)) {
       debugPrint("WINNER!");
       GameManager().addScore(100);
+      AudioManager().playLevelComplete();
       // Show win dialog overlay
       game.overlays.add('WinDialog');
     }

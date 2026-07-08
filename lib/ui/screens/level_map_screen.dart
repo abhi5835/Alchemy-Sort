@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/managers/game_manager.dart';
 import '../../core/managers/banner_ad_widget.dart';
 import 'game_screen.dart';
+import '../../core/managers/audio_manager.dart';
 
 class LevelMapScreen extends StatelessWidget {
   const LevelMapScreen({super.key});
@@ -125,12 +126,12 @@ class LevelMapScreen extends StatelessWidget {
           const _MapHeader(),
 
           // Banner Ad at the bottom
-          const Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: BannerAdWidget(),
-          ),
+          // const Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: BannerAdWidget(),
+          // ),
         ],
       ),
     );
@@ -147,16 +148,15 @@ class _MapHeader extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Row(
           children: [
-
-              Text(
-                'ALCHEMY SORT',
-                style: GoogleFonts.outfit(
-                  color: Colors.white,
-                  fontSize: 18,
-                  letterSpacing: 2.0,
-                  fontWeight: FontWeight.w900,
-                ),
+            Text(
+              'ALCHEMY SORT',
+              style: GoogleFonts.outfit(
+                color: Colors.white,
+                fontSize: 18,
+                letterSpacing: 2.0,
+                fontWeight: FontWeight.w900,
               ),
+            ),
 
             const Spacer(),
 
@@ -170,11 +170,7 @@ class _MapHeader extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.star,
-                    color: Color(0xFFFFD700),
-                    size: 16,
-                  ),
+                  const Icon(Icons.star, color: Color(0xFFFFD700), size: 16),
                   const SizedBox(width: 8),
                   ValueListenableBuilder<int>(
                     valueListenable: GameManager().score,
@@ -189,7 +185,6 @@ class _MapHeader extends StatelessWidget {
                       );
                     },
                   ),
-
                 ],
               ),
             ),
@@ -376,6 +371,7 @@ class _LevelMapScrollViewState extends State<_LevelMapScrollView> {
   }
 
   Future<void> _navigateToGame(BuildContext context, int levelIndex) async {
+    AudioManager().playButtonClick();
     GameManager().setLevel(levelIndex);
     await Navigator.push(
       context,

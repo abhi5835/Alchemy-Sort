@@ -3,6 +3,7 @@ import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import '../components/tube/tube_component.dart';
 import '../components/liquid/stream_component.dart';
+import '../../core/managers/audio_manager.dart';
 
 class PourSystem {
   TubeComponent? _selectedTube;
@@ -33,6 +34,7 @@ class PourSystem {
         _originalPosition = tube.position.clone();
 
         tube.isSelected = true;
+        AudioManager().playSelectVial();
         // Selection feedback: lift the tube
         tube.position.y -= 30;
       }
@@ -70,6 +72,7 @@ class PourSystem {
     if (amountToMove == 0) return _deselect();
 
     _isPouring = true;
+    AudioManager().playPour();
 
     // 1. POSITION SOURCE FOR POURING
     // Determines if target is left or right to set the tilt direction

@@ -10,14 +10,13 @@ import '../liquid/liquid_layer.dart';
 import '../liquid/bubble_particle.dart';
 import 'tube_logic.dart';
 import 'tube_renderer.dart';
+import '../../../core/managers/audio_manager.dart';
 
 class TubeComponent extends PositionComponent
     with TapCallbacks, HasGameReference<AlchemyGame> {
   final TubeLogic logic;
   late final TubeRenderer _renderer;
   final List<LiquidLayer> _liquidComponents = [];
-
-
 
   TubeComponent({required this.logic, double? overrideHeight})
     : super(priority: 1) {
@@ -100,6 +99,7 @@ class TubeComponent extends PositionComponent
     // Check for completion animation
     if (logic.isSolved && !logic.isEmpty && !_wasSolved) {
       _wasSolved = true;
+      AudioManager().playPotionComplete();
       add(
         SequenceEffect([
           ScaleEffect.by(

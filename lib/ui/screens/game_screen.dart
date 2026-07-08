@@ -1,12 +1,16 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../game/alchemy_game.dart';
 import '../dialogs/win_dialog.dart';
 import '../../core/managers/game_manager.dart';
 import '../../core/managers/banner_ad_widget.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/managers/audio_manager.dart';
 
+@Preview(name: 'Bottom Bar')
+Widget preview() => GameScreen();
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -55,7 +59,7 @@ class _GameScreenState extends State<GameScreen> {
                 _buildHeader(context),
                 const Spacer(),
                 _buildBottomBar(context),
-                const BannerAdWidget(),
+                // const BannerAdWidget(),
               ],
             ),
           ),
@@ -94,8 +98,6 @@ class _GameScreenState extends State<GameScreen> {
                   ),
                 ],
               ),
-
-
             ],
           ),
 
@@ -155,7 +157,10 @@ class _GameScreenState extends State<GameScreen> {
               return _BottomActionButton(
                 iconData: Icons.undo,
                 label: 'UNDO',
-                onTap: () => _game.world.undoMove(),
+                onTap: () {
+                  AudioManager().playButtonClick();
+                  _game.world.undoMove();
+                },
                 badgeCount: count,
               );
             },
@@ -166,7 +171,10 @@ class _GameScreenState extends State<GameScreen> {
             valueListenable: _game.world.addTubeRemaining,
             builder: (context, count, _) {
               return _AddVialButton(
-                onTap: () => _game.world.addTube(),
+                onTap: () {
+                  AudioManager().playButtonClick();
+                  _game.world.addTube();
+                },
                 badgeCount: count,
               );
             },
@@ -179,7 +187,10 @@ class _GameScreenState extends State<GameScreen> {
               return _BottomActionButton(
                 iconData: Icons.lightbulb_outline,
                 label: 'HINT',
-                onTap: () => _game.world.showHint(),
+                onTap: () {
+                  AudioManager().playButtonClick();
+                  _game.world.showHint();
+                },
                 badgeCount: count,
               );
             },
@@ -189,7 +200,6 @@ class _GameScreenState extends State<GameScreen> {
     );
   }
 }
-
 
 class _BottomActionButton extends StatelessWidget {
   final IconData iconData;
@@ -296,8 +306,9 @@ class _AddVialButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: AppConstants.mainActionBtnGradientStart
-                          .withValues(alpha: 0.5),
+                      color: AppConstants.mainActionBtnGradientStart.withValues(
+                        alpha: 0.5,
+                      ),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),

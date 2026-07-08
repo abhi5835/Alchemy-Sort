@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/managers/audio_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -65,7 +66,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             alignment: Alignment.centerLeft,
             child: _CircleButton(
               icon: Icons.arrow_back,
-              onTap: () => Navigator.pop(context),
+              onTap: () {
+                AudioManager().playButtonClick();
+                Navigator.pop(context);
+              },
             ),
           ),
           Text(
@@ -89,7 +93,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF141028), // Dark purple card bg
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.05),
+          width: 1,
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
@@ -112,8 +119,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           const SizedBox(height: 30),
-
-
 
           // Quality
           Text(
@@ -147,12 +152,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-
-
   Widget _buildQualityOption(String label) {
     final isSelected = _selectedQuality == label;
     return GestureDetector(
-      onTap: () => setState(() => _selectedQuality = label),
+      onTap: () {
+        AudioManager().playButtonClick();
+        setState(() => _selectedQuality = label);
+      },
       child: Container(
         margin: const EdgeInsets.all(4),
         decoration: BoxDecoration(
@@ -176,7 +182,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildCloseButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pop(context),
+      onTap: () {
+        AudioManager().playButtonClick();
+        Navigator.pop(context);
+      },
       child: Container(
         width: 60,
         height: 60,
@@ -194,7 +203,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1),
+          border: Border.all(
+            color: Colors.white.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: const Icon(Icons.close, color: Colors.white, size: 30),
       ),
