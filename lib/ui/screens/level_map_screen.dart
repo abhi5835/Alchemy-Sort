@@ -1,5 +1,7 @@
 import 'package:alchemy_sort/game/levels/level_repository.dart';
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
+import 'daily_alchemy_screen.dart';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:google_fonts/google_fonts.dart';
@@ -7,6 +9,9 @@ import '../../core/managers/game_manager.dart';
 // import '../../core/managers/banner_ad_widget.dart';
 import 'game_screen.dart';
 import '../../core/managers/audio_manager.dart';
+import '../../core/managers/potion_collection_manager.dart';
+import '../../game/potions/potion_repository.dart';
+import 'potion_book_screen.dart';
 
 class LevelMapScreen extends StatelessWidget {
   const LevelMapScreen({super.key});
@@ -119,8 +124,60 @@ class LevelMapScreen extends StatelessWidget {
             ),
           ),
 
+          // Daily Alchemy Card
+          Padding(
+            padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DailyAlchemyScreen()),
+                );
+              },
+              borderRadius: BorderRadius.circular(16),
+              child: Ink(
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceDark,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppTheme.accentGold.withOpacity(0.5)),
+                  boxShadow: [
+                    BoxShadow(color: AppTheme.accentGold.withOpacity(0.1), blurRadius: 10, spreadRadius: 2),
+                  ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: const Row(
+                  children: [
+                    Icon(Icons.auto_awesome, color: AppTheme.accentGold, size: 36),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'DAILY ALCHEMY',
+                            style: TextStyle(color: AppTheme.accentGold, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontFamily: 'Cinzel'),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "Today's exclusive challenge",
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.chevron_right, color: AppTheme.accentGold),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           // Scrollable Map
-          _LevelMapScrollView(levelCount: levelCount),
+          Padding(
+            padding: const EdgeInsets.only(top: 200),
+            child: _LevelMapScrollView(levelCount: levelCount),
+          ),
 
           // Header
           const _MapHeader(),
@@ -159,6 +216,48 @@ class _MapHeader extends StatelessWidget {
             ),
 
             const Spacer(),
+
+            // Potion Book Button
+            GestureDetector(
+              onTap: () {
+                AudioManager().playButtonClick();
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const PotionBookScreen()),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1F2633),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Row(
+                  children: [
+                    const Text('🧪', style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 6),
+                    ValueListenableBuilder<Set<String>>(
+                      valueListenable:
+                          PotionCollectionManager().discoveredPotionIds,
+                      builder: (context, discovered, child) {
+                        return Text(
+                          '${discovered.length}/${PotionRepository.totalPotionCount}',
+                          style: GoogleFonts.outfit(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
 
             // Coin Balance
             Container(

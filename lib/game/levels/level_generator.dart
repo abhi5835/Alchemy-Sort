@@ -9,8 +9,20 @@ class LevelGenerator {
     final random = Random(levelIndex);
 
     // 1. Determine difficulty
-    int colorCount = (3 + (levelIndex ~/ 10)).clamp(2, 8);
-    int extraTubes = levelIndex < 5 ? 1 : 2;
+    int colorCount;
+    int extraTubes;
+
+    if (levelIndex == 0) {
+      colorCount = 2; // Trivial 2-color puzzle
+      extraTubes = 1;
+    } else if (levelIndex == 1) {
+      colorCount = 3;
+      extraTubes = 2; // Extra forgiving
+    } else {
+      colorCount = (3 + (levelIndex ~/ 10)).clamp(2, 8);
+      extraTubes = levelIndex < 5 ? 1 : 2;
+    }
+    
     int totalTubes = colorCount + extraTubes;
 
     // 2. Generate a unique color palette for THIS level

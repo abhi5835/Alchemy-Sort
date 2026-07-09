@@ -13,8 +13,8 @@ class PourSystem {
   final Function(
     TubeComponent source,
     TubeComponent target,
-    Color color,
-    int amount,
+    List<Color> sourceLiquidsBefore,
+    List<Color> targetLiquidsBefore,
   )?
   onMoveCompleted;
 
@@ -71,81 +71,92 @@ class PourSystem {
     int amountToMove = _calculateAmount(source, target, color);
     if (amountToMove == 0) return _deselect();
 
+    // Capture state before move
+    final sourceLiquidsBefore = List<Color>.from(source.logic.liquids);
+    final targetLiquidsBefore = List<Color>.from(target.logic.liquids);
+
     _isPouring = true;
     AudioManager().playPour();
 
-    // 1. POSITION SOURCE FOR POURING
-    // Determines if target is left or right to set the tilt direction
-    final bool isTargetToRight = target.position.x > source.position.x;
+    try {
+      // 1. POSITION SOURCE FOR POURING
+      // Determines if target is left or right to set the tilt direction
+      final bool isTargetToRight = target.position.x > source.position.x;
 
-    // Offset the source to sit diagonally above the target mouth
-    final Vector2 pourPosition =
-        target.position +
-        Vector2(
-          isTargetToRight ? -source.size.x * 0.6 : source.size.x * 0.6,
-          -source.size.y * 0.5,
-        );
+      // Offset the source to sit diagonally above the target mouth
+      final Vector2 pourPosition =
+          target.position +
+          Vector2(
+            isTargetToRight ? -source.size.x * 0.6 : source.size.x * 0.6,
+            -source.size.y * 0.5,
+          );
 
-    // Smooth move to the pour position
-    source.add(
-      MoveEffect.to(
-        pourPosition,
-        EffectController(duration: 0.4, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    // 2. TILT EFFECT
-    // Tilt angle (0.75 rad) matches the screenshot reference
-    source.add(
-      RotateEffect.to(
-        isTargetToRight ? 0.75 : -0.75,
-        EffectController(duration: 0.4, curve: Curves.easeOutCubic),
-      ),
-    );
-
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    // 3. CREATE STREAM
-    // Connects the source mouth to the target vial interior
-    final stream = StreamComponent(
-      streamColor: color,
-      targetHeight: (target.position.y - source.position.y) + 15,
-      position: source.mouthPosition,
-    );
-    source.parent?.add(stream);
-    stream.animateGrowth(0.15);
-
-    // 4. TRANSFER LOOP
-    for (int i = 0; i < amountToMove; i++) {
-      target.addTemporaryLiquid(color, 0.0);
-      await _animateLiquidTransfer(source, target, color);
-
-      // Commit logical state
-      source.removeLiquid();
-      target.addLiquid(color);
-    }
-
-    // 5. CLEANUP & RETURN
-    stream.animateShrink(0.15);
-    source.add(RotateEffect.to(0, EffectController(duration: 0.3)));
-
-    if (_originalPosition != null) {
+      // Smooth move to the pour position
       source.add(
         MoveEffect.to(
-          _originalPosition!,
-          EffectController(duration: 0.4, curve: Curves.easeInCubic),
+          pourPosition,
+          EffectController(duration: 0.4, curve: Curves.easeOutCubic),
         ),
       );
+
+      // 2. TILT EFFECT
+      // Tilt angle (0.75 rad) matches the screenshot reference
+      source.add(
+        RotateEffect.to(
+          isTargetToRight ? 0.75 : -0.75,
+          EffectController(duration: 0.4, curve: Curves.easeOutCubic),
+        ),
+      );
+
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      // 3. CREATE STREAM
+      // Connects the source mouth to the target vial interior
+      final stream = StreamComponent(
+        streamColor: color,
+        targetHeight: (target.position.y - source.position.y) + 15,
+        position: source.mouthPosition,
+      );
+      source.parent?.add(stream);
+      stream.animateGrowth(0.15);
+
+      // 4. TRANSFER LOOP
+      for (int i = 0; i < amountToMove; i++) {
+        target.addTemporaryLiquid(color, 0.0);
+        await _animateLiquidTransfer(source, target, color);
+
+        // Commit logical state
+        source.removeLiquid();
+        target.addLiquid(color);
+      }
+
+      // 5. CLEANUP & RETURN
+      stream.animateShrink(0.15);
+      source.add(RotateEffect.to(0, EffectController(duration: 0.3)));
+
+      if (_originalPosition != null) {
+        source.add(
+          MoveEffect.to(
+            _originalPosition!,
+            EffectController(duration: 0.4, curve: Curves.easeInCubic),
+          ),
+        );
+      }
+
+      await Future.delayed(const Duration(milliseconds: 400));
+
+      // Required for recording move in undo stack
+      onMoveCompleted?.call(
+        source,
+        target,
+        sourceLiquidsBefore,
+        targetLiquidsBefore,
+      );
+    } finally {
+      _isPouring = false;
+      _deselect();
+      onWinCheck();
     }
-
-    await Future.delayed(const Duration(milliseconds: 400));
-
-    // Required for recording move in undo stack
-    onMoveCompleted?.call(source, target, color, amountToMove);
-
-    _isPouring = false;
-    _deselect();
-    onWinCheck();
   }
 
   /// Calculates how many matching segments can fit into the target

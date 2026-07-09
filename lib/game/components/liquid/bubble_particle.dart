@@ -42,8 +42,8 @@ class BubbleParticle extends PositionComponent {
     position.x += _drift * dt;
 
     // Fade out
-    _paint.color = _paint.color.withValues(alpha: 
-      0.6 * (1 - _lifeTime / maxLifeTime).clamp(0.0, 1.0),
+    _paint.color = _paint.color.withValues(
+      alpha: 0.6 * (1 - _lifeTime / maxLifeTime).clamp(0.0, 1.0),
     );
   }
 

@@ -53,4 +53,12 @@ class TubeLogic {
     if (isEmpty) throw Exception('Cannot remove from empty tube');
     return _liquids.removeLast();
   }
+
+  void restoreState(List<Color> newLiquids) {
+    if (newLiquids.length > capacity) {
+      throw Exception('Too many liquids to restore');
+    }
+    _liquids.clear();
+    _liquids.addAll(newLiquids);
+  }
 }

@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart' show Colors;
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
@@ -11,6 +10,8 @@ import '../liquid/bubble_particle.dart';
 import 'tube_logic.dart';
 import 'tube_renderer.dart';
 import '../../../core/managers/audio_manager.dart';
+import 'package:flutter/services.dart';
+import '../effects/potion_complete_effect.dart';
 
 class TubeComponent extends PositionComponent
     with TapCallbacks, HasGameReference<AlchemyGame> {
@@ -97,18 +98,26 @@ class TubeComponent extends PositionComponent
     add(_renderer);
 
     // Check for completion animation
-    if (logic.isSolved && !logic.isEmpty && !_wasSolved) {
-      _wasSolved = true;
-      AudioManager().playPotionComplete();
-      add(
-        SequenceEffect([
-          ScaleEffect.by(
-            Vector2.all(1.1),
-            EffectController(duration: 0.15, alternate: true),
-          ),
-        ]),
-      );
-    } else if (!logic.isSolved) {
+    if (logic.isSolved && !logic.isEmpty) {
+      if (!_wasSolved) {
+        _wasSolved = true;
+        AudioManager().playPotionComplete();
+        HapticFeedback.lightImpact();
+
+        final effect = PotionCompleteEffect();
+        effect.position = Vector2(size.x / 2, size.y / 2);
+        add(effect);
+
+        add(
+          SequenceEffect([
+            ScaleEffect.by(
+              Vector2.all(1.1),
+              EffectController(duration: 0.15, alternate: true),
+            ),
+          ]),
+        );
+      }
+    } else {
       _wasSolved = false;
     }
   }
@@ -146,6 +155,11 @@ class TubeComponent extends PositionComponent
     final color = logic.removeLiquid();
     _updateLiquids();
     return color;
+  }
+
+  void restoreState(List<Color> newLiquids) {
+    logic.restoreState(newLiquids);
+    _updateLiquids();
   }
 
   /// Updates the height of the top liquid layer visually to simulate draining/filling.

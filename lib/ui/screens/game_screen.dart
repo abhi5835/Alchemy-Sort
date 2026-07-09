@@ -1,11 +1,19 @@
+import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../game/alchemy_game.dart';
+import '../../game/world/game_world.dart';
+import '../../game/alchemy_game_mode.dart';
+import '../../game/daily/daily_challenge_generator.dart';
 import '../dialogs/win_dialog.dart';
+import '../dialogs/daily_complete_dialog.dart';
+import '../dialogs/potion_discovery_dialog.dart';
 import '../../core/managers/game_manager.dart';
-// import '../../core/managers/banner_ad_widget.dart';
+import '../../core/theme/app_theme.dart';
+import '../../game/models/level_completion_result.dart';
+import '../../game/models/daily_completion_result.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/managers/audio_manager.dart';
 
@@ -13,57 +21,120 @@ import '../../core/managers/audio_manager.dart';
 Widget preview() => GameScreen();
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key});
+  final GameMode gameMode;
+  final DailyChallenge? dailyChallenge;
+
+  const GameScreen({
+    super.key,
+    this.gameMode = GameMode.normal,
+    this.dailyChallenge,
+  });
 
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
 
-class _GameScreenState extends State<GameScreen> {
-  late final AlchemyGame _game;
+class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
+  late AlchemyGame _game;
+  Timer? _checkTimer;
 
   @override
   void initState() {
     super.initState();
-    _game = AlchemyGame();
+    WidgetsBinding.instance.addObserver(this);
+    _game = AlchemyGame(gameMode: widget.gameMode, dailyChallenge: widget.dailyChallenge);
+    // Listen for level completion to show dialog
+    _restartCheckTimer();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _checkTimer?.cancel();
+    // Do not call AudioManager().stopMusic() here! 
+    // It breaks background music on map navigation.
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _game.pauseEngine();
+      _game.world.pauseTracker();
+    } else if (state == AppLifecycleState.resumed) {
+      _game.resumeEngine();
+      _game.world.resumeTracker();
+    }
+  }
+
+  void _restartCheckTimer() {
+    _checkTimer?.cancel();
+    _checkTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      if (_game.world.completionResult != null) {
+        timer.cancel();
+        _game.overlays.add('WinDialog');
+      } else if (_game.world.dailyCompletionResult != null) {
+        timer.cancel();
+        _game.overlays.add('DailyCompleteDialog');
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background - gradient or image
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/back1.png'),
-                fit: BoxFit.cover,
+    return PopScope(
+      canPop: true,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          _game.world.onLevelExited();
+        }
+      },
+      child: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Background - gradient or image
+            Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/back1.png'),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
 
-          // Game Layer - With padding for UI
-          GameWidget<AlchemyGame>(
-            game: _game,
-            overlayBuilderMap: {
-              'WinDialog': (context, game) => WinDialog(game: game),
-            },
-          ),
-
-          // UI Content
-          SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(context),
-                const Spacer(),
-                _buildBottomBar(context),
-                // const BannerAdWidget(),
-              ],
+            // Game Layer - With padding for UI
+            GameWidget<AlchemyGame>(
+              game: _game,
+              overlayBuilderMap: {
+                'WinDialog': (context, game) => WinDialog(game: game),
+                'DailyCompleteDialog': (context, game) => DailyCompleteDialog(result: game.world.dailyCompletionResult!),
+                'PotionDiscoveryDialog': (context, game) {
+                  final alchemyGame = game;
+                  if (alchemyGame.lastDiscoveredPotion == null) {
+                    return const SizedBox.shrink();
+                  }
+                  return PotionDiscoveryDialog(
+                    game: alchemyGame,
+                    potion: alchemyGame.lastDiscoveredPotion!,
+                  );
+                },
+              },
             ),
-          ),
-        ],
+
+            // UI Content
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  const Spacer(),
+                  _buildBottomBar(context),
+                  // const BannerAdWidget(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -73,30 +144,32 @@ class _GameScreenState extends State<GameScreen> {
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
       child: Column(
         children: [
-          // Top Row: Title Area and Action Buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Title Area
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ValueListenableBuilder<int>(
-                    valueListenable: GameManager().currentLevelIndex,
-                    builder: (context, levelIndex, _) {
-                      return Text(
-                        'LEVEL ${levelIndex + 1}',
-                        style: GoogleFonts.cinzel(
-                          color: Colors.white60,
-                          fontSize: 22,
-                          letterSpacing: 2,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      );
-                    },
-                  ),
-                ],
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppTheme.accentGold.withOpacity(0.5)),
+                ),
+                child: ValueListenableBuilder<int>(
+                  valueListenable: GameManager().currentLevelIndex,
+                  builder: (context, index, child) {
+                    final title = widget.gameMode == GameMode.dailyAlchemy 
+                        ? 'DAILY ALCHEMY'
+                        : 'LEVEL ${index + 1}';
+                    return Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),
