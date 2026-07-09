@@ -3,6 +3,8 @@ import 'package:flame/effects.dart';
 import 'package:flame/particles.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import '../../../core/managers/settings_manager.dart';
+import '../../../data/models/player_settings.dart';
 
 class PotionCompleteEffect extends PositionComponent with HasPaint {
   final Color potionColor;
@@ -110,7 +112,13 @@ class PotionCompleteEffect extends PositionComponent with HasPaint {
   }
 
   void _spawnParticles(Color baseColor) {
-    final particleCount = 8 + _random.nextInt(7); // 8 to 14
+    final quality = SettingsManager().settingsNotifier.value.graphicsQuality;
+    if (quality == GraphicsQuality.batterySaver) return;
+
+    int particleCount = 8 + _random.nextInt(7); // 8 to 14
+    if (quality == GraphicsQuality.balanced) {
+      particleCount = max(1, particleCount ~/ 2);
+    }
 
     final particleComponent = ParticleSystemComponent(
       particle: Particle.generate(

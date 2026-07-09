@@ -10,9 +10,9 @@ import '../../core/managers/game_manager.dart';
 // import '../../core/managers/banner_ad_widget.dart';
 import 'game_screen.dart';
 import '../../core/managers/audio_manager.dart';
-import '../../core/managers/potion_collection_manager.dart';
-import '../../game/potions/potion_repository.dart';
-import 'potion_book_screen.dart';
+import 'profile_screen.dart';
+import '../../core/managers/settings_manager.dart';
+import '../../data/models/player_profile.dart';
 
 class LevelMapScreen extends StatelessWidget {
   const LevelMapScreen({super.key});
@@ -144,7 +144,7 @@ class LevelMapScreen extends StatelessWidget {
 
           // Daily Alchemy Card
           Padding(
-            padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
+            padding: const EdgeInsets.only(top: 110, left: 16, right: 16),
             child: Container(
               decoration: BoxDecoration(
                 color: AppTheme.surfaceDark,
@@ -255,141 +255,58 @@ class _MapHeader extends StatelessWidget {
 
             const Spacer(),
 
-            // Music Button
-            ValueListenableBuilder<bool>(
-              valueListenable: AudioManager().musicEnabledNotifier,
-              builder: (context, isMusicEnabled, child) {
+            // Profile Button
+            ValueListenableBuilder<PlayerProfile>(
+              valueListenable: SettingsManager().profileNotifier,
+              builder: (context, profile, child) {
                 return GestureDetector(
                   onTap: () {
                     AudioManager().playButtonClick();
-                    unawaited(AudioManager().setMusicEnabled(!isMusicEnabled));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 6,
-                    ),
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1F2633),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white10),
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF1E293B),
+                      border: Border.all(color: AppTheme.accentGold, width: 2),
                     ),
                     child: Icon(
-                      isMusicEnabled ? Icons.music_note : Icons.music_off,
-                      color: isMusicEnabled
-                          ? const Color(0xFFFFD700)
-                          : Colors.white54,
-                      size: 20,
+                      _getIconData(profile.avatarIcon),
+                      color: Colors.white,
+                      size: 18,
                     ),
                   ),
                 );
               },
             ),
             const SizedBox(width: 8),
-
-            // Potion Book Button
-            GestureDetector(
-              onTap: () {
-                AudioManager().playButtonClick();
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PotionBookScreen()),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1F2633),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white10),
-                ),
-                child: Row(
-                  children: [
-                    const Text('🧪', style: TextStyle(fontSize: 14)),
-                    const SizedBox(width: 6),
-                    ValueListenableBuilder<Set<String>>(
-                      valueListenable:
-                          PotionCollectionManager().discoveredPotionIds,
-                      builder: (context, discovered, child) {
-                        return Text(
-                          '${discovered.length}/${PotionRepository.totalPotionCount}',
-                          style: GoogleFonts.outfit(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-
-            // Coin Balance
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1F2633),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white10),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.star, color: Color(0xFFFFD700), size: 16),
-                  const SizedBox(width: 8),
-                  ValueListenableBuilder<int>(
-                    valueListenable: GameManager().score,
-                    builder: (context, score, child) {
-                      return Text(
-                        '$score',
-                        style: GoogleFonts.outfit(
-                          color: const Color(0xFFFFD700),
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-
-            // Hint Balance
-            // Container(
-            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            //   decoration: BoxDecoration(
-            //     color: const Color(0xFF1F2633),
-            //     borderRadius: BorderRadius.circular(20),
-            //     border: Border.all(color: Colors.white10),
-            //   ),
-            //   child: Row(
-            //     children: [
-            //       const Icon(
-            //         Icons.lightbulb,
-            //         color: Color(0xFFB388FF),
-            //         size: 16,
-            //       ),
-            //       const SizedBox(width: 8),
-            //       Text(
-            //         '3',
-            //         style: GoogleFonts.outfit(
-            //           color: Colors.white,
-            //           fontSize: 14,
-            //           fontWeight: FontWeight.bold,
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
     );
+  }
+
+  IconData _getIconData(String name) {
+    switch (name) {
+      case 'science':
+        return Icons.science;
+      case 'auto_awesome':
+        return Icons.auto_awesome;
+      case 'emoji_events':
+        return Icons.emoji_events;
+      case 'local_fire_department':
+        return Icons.local_fire_department;
+      case 'star':
+        return Icons.star;
+      case 'pets':
+        return Icons.pets;
+      default:
+        return Icons.person;
+    }
   }
 }
 
@@ -463,35 +380,37 @@ class _LevelMapScrollViewState extends State<_LevelMapScrollView> {
       physics: const BouncingScrollPhysics(),
       child: SizedBox(
         height: totalHeight,
-        child: Stack(
-          children: [
-            // Path Line
-            Positioned.fill(
-              child: CustomPaint(
-                painter: DashedPathPainter(
-                  levelCount: widget.levelCount,
-                  nodeGap: nodeGap,
+        child: ValueListenableBuilder<int>(
+          valueListenable: GameManager().keyUnlockedLevelIndex,
+          builder: (context, unlockedIndex, child) {
+            return Stack(
+              children: [
+                // Path Line
+                Positioned.fill(
+                  child: RepaintBoundary(
+                    child: CustomPaint(
+                      painter: DashedPathPainter(
+                        levelCount: widget.levelCount,
+                        nodeGap: nodeGap,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
 
-            // Level Nodes
-            ...List.generate(widget.levelCount, (index) {
-              final int levelNumber = index + 1;
-              // Start from bottom, add padding
-              final double y = totalHeight - (index * nodeGap) - 150;
+                // Level Nodes
+                ...List.generate(widget.levelCount, (index) {
+                  final int levelNumber = index + 1;
+                  // Start from bottom, add padding
+                  final double y = totalHeight - (index * nodeGap) - 150;
 
-              // Calculate X based on Sine wave
-              final double screenWidth = MediaQuery.of(context).size.width;
-              final double amplitude = screenWidth * 0.25; // Narrower wave
-              final double centerX = screenWidth / 2;
+                  // Calculate X based on Sine wave
+                  final double screenWidth = MediaQuery.of(context).size.width;
+                  final double amplitude = screenWidth * 0.25; // Narrower wave
+                  final double centerX = screenWidth / 2;
 
-              // Phase shift to match screenshot look (starts left-ish?)
-              final double x = centerX + amplitude * sin(index * 0.7 + pi);
+                  // Phase shift to match screenshot look (starts left-ish?)
+                  final double x = centerX + amplitude * sin(index * 0.7 + pi);
 
-              return ValueListenableBuilder<int>(
-                valueListenable: GameManager().keyUnlockedLevelIndex,
-                builder: (context, unlockedIndex, child) {
                   final bool isLocked = index > unlockedIndex;
                   final bool isCurrent = index == unlockedIndex;
                   final bool isCompleted = index < unlockedIndex;
@@ -508,10 +427,10 @@ class _LevelMapScrollViewState extends State<_LevelMapScrollView> {
                       isCompleted,
                     ),
                   );
-                },
-              );
-            }),
-          ],
+                }),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -557,40 +476,53 @@ class DashedPathPainter extends CustomPainter {
   final int levelCount;
   final double nodeGap;
 
+  // Cache the generated dashed path so we don't recalculate 54k pixels on repaints
+  static Path? _cachedDashPath;
+  static Size? _cachedSize;
+  static int? _cachedLevelCount;
+  static double? _cachedNodeGap;
+
   DashedPathPainter({required this.levelCount, required this.nodeGap});
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (_cachedDashPath == null ||
+        _cachedSize != size ||
+        _cachedLevelCount != levelCount ||
+        _cachedNodeGap != nodeGap) {
+      final path = Path();
+      final double totalHeight = size.height;
+      final double centerX = size.width / 2;
+      final double amplitude = size.width * 0.25;
+
+      bool firstPoint = true;
+
+      // Plot curve
+      for (double i = 0; i <= levelCount; i += 0.1) {
+        final double y = totalHeight - (i * nodeGap) - 150;
+        final double x = centerX + amplitude * sin(i * 0.7 + pi);
+
+        if (firstPoint) {
+          path.moveTo(x, y);
+          firstPoint = false;
+        } else {
+          path.lineTo(x, y);
+        }
+      }
+
+      _cachedDashPath = _dashPath(path, dashWidth: 10, dashSpace: 10);
+      _cachedSize = size;
+      _cachedLevelCount = levelCount;
+      _cachedNodeGap = nodeGap;
+    }
+
     final paint = Paint()
-      ..color = const Color(0xFF3F51B5)
-          .withValues(alpha: 0.5) // Blue-ish path
+      ..color = const Color(0xFF3F51B5).withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4.0
       ..strokeCap = StrokeCap.round;
 
-    final path = Path();
-    final double totalHeight = size.height;
-    final double centerX = size.width / 2;
-    final double amplitude = size.width * 0.25;
-
-    bool firstPoint = true;
-
-    // Plot curve
-    for (double i = 0; i <= levelCount; i += 0.1) {
-      final double y = totalHeight - (i * nodeGap) - 150;
-      final double x = centerX + amplitude * sin(i * 0.7 + pi);
-
-      if (firstPoint) {
-        path.moveTo(x, y);
-        firstPoint = false;
-      } else {
-        path.lineTo(x, y);
-      }
-    }
-
-    // Draw Dashed Line
-    final dashPath = _dashPath(path, dashWidth: 10, dashSpace: 10);
-    canvas.drawPath(dashPath, paint);
+    canvas.drawPath(_cachedDashPath!, paint);
   }
 
   Path _dashPath(
@@ -613,7 +545,10 @@ class DashedPathPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant DashedPathPainter oldDelegate) {
+    return oldDelegate.levelCount != levelCount ||
+        oldDelegate.nodeGap != nodeGap;
+  }
 }
 
 // ---------------- NODE WIDGETS ----------------

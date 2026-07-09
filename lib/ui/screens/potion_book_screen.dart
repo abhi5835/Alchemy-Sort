@@ -5,7 +5,8 @@ import '../../game/potions/potion_repository.dart';
 import '../widgets/potion_card.dart';
 
 class PotionBookScreen extends StatefulWidget {
-  const PotionBookScreen({super.key});
+  final bool embedded;
+  const PotionBookScreen({super.key, this.embedded = false});
 
   @override
   State<PotionBookScreen> createState() => _PotionBookScreenState();
@@ -21,10 +22,12 @@ class _PotionBookScreenState extends State<PotionBookScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: widget.embedded
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
         title: Text(
           'POTION BOOK',
           style: GoogleFonts.cinzel(

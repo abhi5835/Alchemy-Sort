@@ -10,6 +10,8 @@ import '../liquid/liquid_layer.dart';
 import '../liquid/bubble_particle.dart';
 import 'tube_logic.dart';
 import 'tube_renderer.dart';
+import '../../../core/managers/settings_manager.dart';
+import '../../../data/models/player_settings.dart';
 
 class TubeComponent extends PositionComponent
     with TapCallbacks, HasGameReference<AlchemyGame> {
@@ -207,7 +209,14 @@ class TubeComponent extends PositionComponent
   static final Random _random = Random();
 
   void spawnBubbles(Color color, int count) {
-    for (int i = 0; i < count; i++) {
+    final quality = SettingsManager().settingsNotifier.value.graphicsQuality;
+    if (quality == GraphicsQuality.batterySaver) return;
+
+    final adjustedCount = quality == GraphicsQuality.balanced
+        ? max(1, count ~/ 2)
+        : count;
+
+    for (int i = 0; i < adjustedCount; i++) {
       final bubble = BubbleParticle(
         position: Vector2(_random.nextDouble() * size.x, size.y * 0.8),
         color: Colors.white.withValues(alpha: 0.4),

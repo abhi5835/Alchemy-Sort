@@ -22,6 +22,7 @@ import '../logic/combo_manager.dart';
 import '../components/effects/combo_feedback_component.dart';
 import '../components/effects/potion_complete_effect.dart';
 import '../components/effects/level_complete_celebration.dart';
+import '../../core/managers/settings_manager.dart';
 import 'package:flutter/services.dart';
 import '../analytics/game_analytics_service.dart';
 import '../analytics/level_attempt_tracker.dart';
@@ -40,6 +41,8 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   late final PourSystem _pourSystem;
   final List<TubeComponent> _tubes = [];
   bool _isLevelComplete = false;
+  final Set<int> _completedTubeIndices = {};
+  final Set<int> _countedPotionTubeIndices = {};
   LevelCompletionResult? completionResult;
   DailyCompletionResult? dailyCompletionResult;
 
@@ -50,7 +53,6 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   LevelSessionStats get sessionStats => _sessionStats;
 
   final ComboManager _comboManager = ComboManager();
-  final Set<int> _completedTubeIndices = {};
 
   LevelAttemptTracker? _attemptTracker;
   String? get currentSessionId => _attemptTracker?.sessionId;
@@ -104,15 +106,27 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
         !_completedTubeIndices.contains(sourceIndex)) {
       _completedTubeIndices.add(sourceIndex);
       newlyCompletedPotions++;
+
+      if (!_countedPotionTubeIndices.contains(sourceIndex)) {
+        _countedPotionTubeIndices.add(sourceIndex);
+        SettingsManager().incrementPotionsCreated(1);
+      }
+
       _triggerPotionCompletionVisual(source, sourceIndex);
     }
 
-    if (target.logic.isSolved &&
-        !target.logic.isEmpty &&
-        !_completedTubeIndices.contains(targetIndex)) {
-      _completedTubeIndices.add(targetIndex);
-      newlyCompletedPotions++;
-      _triggerPotionCompletionVisual(target, targetIndex);
+    if (target.logic.isSolved && !target.logic.isEmpty) {
+      if (!_completedTubeIndices.contains(targetIndex)) {
+        newlyCompletedPotions++;
+        _completedTubeIndices.add(targetIndex);
+
+        if (!_countedPotionTubeIndices.contains(targetIndex)) {
+          _countedPotionTubeIndices.add(targetIndex);
+          SettingsManager().incrementPotionsCreated(1);
+        }
+
+        _triggerPotionCompletionVisual(target, targetIndex);
+      }
     }
 
     if (newlyCompletedPotions > 0) {
@@ -314,6 +328,8 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   Future<void> loadNextLevel({int restartCount = 0}) async {
     addTubeRemaining.value = 3; // Reset added tubes count on level load
     _isLevelComplete = false;
+    _completedTubeIndices.clear();
+    _countedPotionTubeIndices.clear();
     completionResult = null;
     _moveHistory.clear();
     _sessionStats.reset();

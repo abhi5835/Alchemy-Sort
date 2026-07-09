@@ -2,6 +2,11 @@ import 'package:flame/components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+const bool showPerformanceOverlay = bool.fromEnvironment(
+  'SHOW_PERFORMANCE_OVERLAY',
+  defaultValue: false,
+);
+
 class PerformanceMonitor extends PositionComponent {
   late TextComponent _fpsText;
   late TextComponent _componentCountText;
@@ -15,7 +20,7 @@ class PerformanceMonitor extends PositionComponent {
 
   @override
   Future<void> onLoad() async {
-    if (!kDebugMode) {
+    if (!kDebugMode && !showPerformanceOverlay) {
       removeFromParent();
       return;
     }
@@ -47,7 +52,7 @@ class PerformanceMonitor extends PositionComponent {
 
   @override
   void update(double dt) {
-    if (!kDebugMode) return;
+    if (!kDebugMode && !showPerformanceOverlay) return;
 
     super.update(dt);
     _frameCount++;

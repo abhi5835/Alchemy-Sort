@@ -9,7 +9,8 @@ import '../../data/local/database/tables/daily_alchemy_records_table.dart';
 import 'game_screen.dart';
 
 class DailyAlchemyScreen extends StatefulWidget {
-  const DailyAlchemyScreen({super.key});
+  final bool embedded;
+  const DailyAlchemyScreen({super.key, this.embedded = false});
 
   @override
   State<DailyAlchemyScreen> createState() => _DailyAlchemyScreenState();
@@ -84,10 +85,12 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
           ),
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.accentGold),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: widget.embedded
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.arrow_back, color: AppTheme.accentGold),
+                onPressed: () => Navigator.pop(context),
+              ),
       ),
       body: StreamBuilder<DailyAlchemyRecordData?>(
         stream: _repo.watchDailyRecord(_challenge!.dateKey),

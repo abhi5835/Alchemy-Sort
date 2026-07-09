@@ -16,6 +16,7 @@ class AudioManager {
   bool _isMusicEnabled = true;
   final ValueNotifier<bool> musicEnabledNotifier = ValueNotifier(true);
   bool _isSfxEnabled = true;
+  final ValueNotifier<bool> sfxEnabledNotifier = ValueNotifier(true);
 
   bool _isInitialized = false;
   Future<void>? _initializationFuture;
@@ -88,6 +89,7 @@ class AudioManager {
       musicEnabledNotifier.value = _isMusicEnabled;
 
       _isSfxEnabled = _prefs?.getBool(_sfxPrefsKey) ?? true;
+      sfxEnabledNotifier.value = _isSfxEnabled;
 
       FlameAudio.bgm.initialize();
 
@@ -210,6 +212,7 @@ class AudioManager {
 
   Future<void> setSfxEnabled(bool enabled) async {
     _isSfxEnabled = enabled;
+    sfxEnabledNotifier.value = enabled;
     await _prefs?.setBool(_sfxPrefsKey, enabled);
   }
 

@@ -9,6 +9,7 @@ import 'core/managers/potion_collection_manager.dart';
 import 'data/local/database/app_database.dart';
 import 'data/local/migrations/legacy_preferences_migration.dart';
 import 'game/analytics/game_analytics_service.dart';
+import 'core/managers/settings_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +26,7 @@ void main() async {
   GameAnalyticsService().runDataRetentionCleanup();
 
   await AudioManager().init();
+  await SettingsManager().init();
 
   runApp(const MyApp());
 }
