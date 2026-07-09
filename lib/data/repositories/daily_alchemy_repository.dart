@@ -41,7 +41,8 @@ class DailyAlchemyRepository {
     return await _db.transaction(() async {
       // 1. Fetch current status
       final record = await _db.dailyAlchemyDao.getByDateKey(dateKey);
-      if (record == null) throw Exception('Daily record not found for $dateKey');
+      if (record == null)
+        throw Exception('Daily record not found for $dateKey');
 
       final firstCompletion = record.status != DailyChallengeStatus.completed;
 
@@ -57,8 +58,12 @@ class DailyAlchemyRepository {
         );
 
         // Fetch streak just for display
-        final completedRecords = await _db.dailyAlchemyDao.getCompletedRecords();
-        final streaks = DailyStreakPolicy.calculateStreaks(completedRecords, DateTime.now());
+        final completedRecords = await _db.dailyAlchemyDao
+            .getCompletedRecords();
+        final streaks = DailyStreakPolicy.calculateStreaks(
+          completedRecords,
+          DateTime.now(),
+        );
 
         return DailyCompletionResult(
           dateKey: dateKey,
@@ -69,7 +74,11 @@ class DailyAlchemyRepository {
           previousStreak: streaks.currentStreak, // no change
           currentStreak: streaks.currentStreak,
           longestStreak: streaks.longestStreak,
-          reward: const DailyRewardResult(baseXp: 0, starBonusXp: 0, streakBonusXp: 0), // 0 XP for practice
+          reward: const DailyRewardResult(
+            baseXp: 0,
+            starBonusXp: 0,
+            streakBonusXp: 0,
+          ), // 0 XP for practice
           firstCompletion: false,
           rewardGranted: false,
         );
@@ -77,11 +86,16 @@ class DailyAlchemyRepository {
 
       // 2. Fetch completed records to calculate previous streak
       final completedRecords = await _db.dailyAlchemyDao.getCompletedRecords();
-      final streaksBefore = DailyStreakPolicy.calculateStreaks(completedRecords, DateTime.now());
+      final streaksBefore = DailyStreakPolicy.calculateStreaks(
+        completedRecords,
+        DateTime.now(),
+      );
 
       // Simulate appending today's completion for the new streak
       final newStreak = streaksBefore.currentStreak + 1;
-      final newLongestStreak = newStreak > streaksBefore.longestStreak ? newStreak : streaksBefore.longestStreak;
+      final newLongestStreak = newStreak > streaksBefore.longestStreak
+          ? newStreak
+          : streaksBefore.longestStreak;
 
       // 3. Calculate reward
       final reward = DailyRewardPolicy.calculateReward(

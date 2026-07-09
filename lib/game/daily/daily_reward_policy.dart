@@ -10,7 +10,7 @@ class DailyRewardResult {
   });
 
   int get totalXp => baseXp + starBonusXp + streakBonusXp;
-  
+
   bool get hasMilestoneBonus => streakBonusXp > 0;
 }
 
@@ -30,14 +30,14 @@ class DailyRewardPolicy {
 
   static int calculateStreakBonus(int streak) {
     if (streak <= 0) return 0;
-    
+
     // Precedence: Monthly bonus overrides Weekly bonus
     if (streak % 30 == 0) {
       return 500;
     } else if (streak % 7 == 0) {
       return 100;
     }
-    
+
     return 0;
   }
 

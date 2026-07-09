@@ -139,15 +139,25 @@ class LevelMapScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppTheme.surfaceDark,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppTheme.accentGold.withOpacity(0.5)),
+                  border: Border.all(
+                    color: AppTheme.accentGold.withOpacity(0.5),
+                  ),
                   boxShadow: [
-                    BoxShadow(color: AppTheme.accentGold.withOpacity(0.1), blurRadius: 10, spreadRadius: 2),
+                    BoxShadow(
+                      color: AppTheme.accentGold.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
                   ],
                 ),
                 padding: const EdgeInsets.all(20),
                 child: const Row(
                   children: [
-                    Icon(Icons.auto_awesome, color: AppTheme.accentGold, size: 36),
+                    Icon(
+                      Icons.auto_awesome,
+                      color: AppTheme.accentGold,
+                      size: 36,
+                    ),
                     SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -156,12 +166,21 @@ class LevelMapScreen extends StatelessWidget {
                         children: [
                           Text(
                             'DAILY ALCHEMY',
-                            style: TextStyle(color: AppTheme.accentGold, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.5, fontFamily: 'Cinzel'),
+                            style: TextStyle(
+                              color: AppTheme.accentGold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5,
+                              fontFamily: 'Cinzel',
+                            ),
                           ),
                           SizedBox(height: 4),
                           Text(
                             "Today's exclusive challenge",
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
                           ),
                         ],
                       ),

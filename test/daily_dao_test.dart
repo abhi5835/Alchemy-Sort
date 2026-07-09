@@ -17,20 +17,33 @@ void main() {
       await db.close();
     });
 
-    test('9 & 10. Record is created once and duplicate ensure does not duplicate record', () async {
-      final challenge = DailyChallenge(dateKey: '2026-07-09', seed: 12345, sourceLevelIndex: 10);
-      
-      await db.dailyAlchemyDao.ensureRecord(challenge: challenge);
-      await db.dailyAlchemyDao.ensureRecord(challenge: challenge); // duplicate
+    test(
+      '9 & 10. Record is created once and duplicate ensure does not duplicate record',
+      () async {
+        final challenge = DailyChallenge(
+          dateKey: '2026-07-09',
+          seed: 12345,
+          sourceLevelIndex: 10,
+        );
 
-      final records = await db.select(db.dailyAlchemyRecords).get();
-      expect(records.length, 1);
-      expect(records.first.dateKey, '2026-07-09');
-      expect(records.first.status, DailyChallengeStatus.notStarted);
-    });
+        await db.dailyAlchemyDao.ensureRecord(challenge: challenge);
+        await db.dailyAlchemyDao.ensureRecord(
+          challenge: challenge,
+        ); // duplicate
+
+        final records = await db.select(db.dailyAlchemyRecords).get();
+        expect(records.length, 1);
+        expect(records.first.dateKey, '2026-07-09');
+        expect(records.first.status, DailyChallengeStatus.notStarted);
+      },
+    );
 
     test('11. Attempt count increments', () async {
-      final challenge = DailyChallenge(dateKey: '2026-07-09', seed: 12345, sourceLevelIndex: 10);
+      final challenge = DailyChallenge(
+        dateKey: '2026-07-09',
+        seed: 12345,
+        sourceLevelIndex: 10,
+      );
       await db.dailyAlchemyDao.ensureRecord(challenge: challenge);
 
       await db.dailyAlchemyDao.startAttempt('2026-07-09');
@@ -42,9 +55,13 @@ void main() {
     });
 
     test('12. Completion persists', () async {
-      final challenge = DailyChallenge(dateKey: '2026-07-09', seed: 12345, sourceLevelIndex: 10);
+      final challenge = DailyChallenge(
+        dateKey: '2026-07-09',
+        seed: 12345,
+        sourceLevelIndex: 10,
+      );
       await db.dailyAlchemyDao.ensureRecord(challenge: challenge);
-      
+
       await db.dailyAlchemyDao.commitCompletion(
         dateKey: '2026-07-09',
         moveCount: 50,
@@ -62,9 +79,13 @@ void main() {
     });
 
     test('13 & 14. Reward claimed persists and idempotent', () async {
-      final challenge = DailyChallenge(dateKey: '2026-07-09', seed: 12345, sourceLevelIndex: 10);
+      final challenge = DailyChallenge(
+        dateKey: '2026-07-09',
+        seed: 12345,
+        sourceLevelIndex: 10,
+      );
       await db.dailyAlchemyDao.ensureRecord(challenge: challenge);
-      
+
       bool firstClaim = await db.dailyAlchemyDao.claimReward('2026-07-09');
       expect(firstClaim, isTrue);
 

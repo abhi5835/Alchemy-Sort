@@ -6,22 +6,29 @@ import '../../../../game/daily/daily_challenge_generator.dart';
 part 'daily_alchemy_dao.g.dart';
 
 @DriftAccessor(tables: [DailyAlchemyRecords])
-class DailyAlchemyDao extends DatabaseAccessor<AppDatabase> with _$DailyAlchemyDaoMixin {
+class DailyAlchemyDao extends DatabaseAccessor<AppDatabase>
+    with _$DailyAlchemyDaoMixin {
   DailyAlchemyDao(super.db);
 
   Future<DailyAlchemyRecordData?> getByDateKey(String dateKey) async {
-    return (select(dailyAlchemyRecords)..where((t) => t.dateKey.equals(dateKey))).getSingleOrNull();
+    return (select(
+      dailyAlchemyRecords,
+    )..where((t) => t.dateKey.equals(dateKey))).getSingleOrNull();
   }
 
   Stream<DailyAlchemyRecordData?> watchByDateKey(String dateKey) {
-    return (select(dailyAlchemyRecords)..where((t) => t.dateKey.equals(dateKey))).watchSingleOrNull();
+    return (select(
+      dailyAlchemyRecords,
+    )..where((t) => t.dateKey.equals(dateKey))).watchSingleOrNull();
   }
 
   Future<List<DailyAlchemyRecordData>> getCompletedRecords() async {
     return (select(dailyAlchemyRecords)
-      ..where((t) => t.status.equals(DailyChallengeStatus.completed.name))
-      ..orderBy([(t) => OrderingTerm(expression: t.dateKey, mode: OrderingMode.desc)]))
-      .get();
+          ..where((t) => t.status.equals(DailyChallengeStatus.completed.name))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.dateKey, mode: OrderingMode.desc),
+          ]))
+        .get();
   }
 
   Future<void> ensureRecord({required DailyChallenge challenge}) async {
@@ -41,11 +48,13 @@ class DailyAlchemyDao extends DatabaseAccessor<AppDatabase> with _$DailyAlchemyD
     final record = await getByDateKey(dateKey);
     if (record == null) return;
 
-    final newStatus = record.status == DailyChallengeStatus.notStarted 
-        ? DailyChallengeStatus.inProgress 
+    final newStatus = record.status == DailyChallengeStatus.notStarted
+        ? DailyChallengeStatus.inProgress
         : record.status;
 
-    await (update(dailyAlchemyRecords)..where((t) => t.dateKey.equals(dateKey))).write(
+    await (update(
+      dailyAlchemyRecords,
+    )..where((t) => t.dateKey.equals(dateKey))).write(
       DailyAlchemyRecordsCompanion(
         status: Value(newStatus),
         attemptCount: Value(record.attemptCount + 1),
@@ -67,11 +76,21 @@ class DailyAlchemyDao extends DatabaseAccessor<AppDatabase> with _$DailyAlchemyD
     final isFirstCompletion = record.status != DailyChallengeStatus.completed;
     final now = DateTime.now();
 
-    final newMoveCount = (record.bestMoveCount == null || moveCount < record.bestMoveCount!) ? moveCount : record.bestMoveCount;
-    final newDuration = (record.bestDurationMs == null || durationMs < record.bestDurationMs!) ? durationMs : record.bestDurationMs;
-    final newStars = (record.bestStars == null || stars > record.bestStars!) ? stars : record.bestStars;
+    final newMoveCount =
+        (record.bestMoveCount == null || moveCount < record.bestMoveCount!)
+        ? moveCount
+        : record.bestMoveCount;
+    final newDuration =
+        (record.bestDurationMs == null || durationMs < record.bestDurationMs!)
+        ? durationMs
+        : record.bestDurationMs;
+    final newStars = (record.bestStars == null || stars > record.bestStars!)
+        ? stars
+        : record.bestStars;
 
-    await (update(dailyAlchemyRecords)..where((t) => t.dateKey.equals(dateKey))).write(
+    await (update(
+      dailyAlchemyRecords,
+    )..where((t) => t.dateKey.equals(dateKey))).write(
       DailyAlchemyRecordsCompanion(
         status: const Value(DailyChallengeStatus.completed),
         bestMoveCount: Value(newMoveCount),
@@ -88,13 +107,16 @@ class DailyAlchemyDao extends DatabaseAccessor<AppDatabase> with _$DailyAlchemyD
     final record = await getByDateKey(dateKey);
     if (record == null || record.rewardClaimed) return false;
 
-    final updatedRows = await (update(dailyAlchemyRecords)
-          ..where((t) => t.dateKey.equals(dateKey))
-          ..where((t) => t.rewardClaimed.equals(false)))
-        .write(DailyAlchemyRecordsCompanion(
-          rewardClaimed: const Value(true),
-          updatedAt: Value(DateTime.now()),
-        ));
+    final updatedRows =
+        await (update(dailyAlchemyRecords)
+              ..where((t) => t.dateKey.equals(dateKey))
+              ..where((t) => t.rewardClaimed.equals(false)))
+            .write(
+              DailyAlchemyRecordsCompanion(
+                rewardClaimed: const Value(true),
+                updatedAt: Value(DateTime.now()),
+              ),
+            );
 
     return updatedRows > 0;
   }

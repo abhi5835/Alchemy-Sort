@@ -42,7 +42,10 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _game = AlchemyGame(gameMode: widget.gameMode, dailyChallenge: widget.dailyChallenge);
+    _game = AlchemyGame(
+      gameMode: widget.gameMode,
+      dailyChallenge: widget.dailyChallenge,
+    );
     // Listen for level completion to show dialog
     _restartCheckTimer();
   }
@@ -51,14 +54,15 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _checkTimer?.cancel();
-    // Do not call AudioManager().stopMusic() here! 
+    // Do not call AudioManager().stopMusic() here!
     // It breaks background music on map navigation.
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       _game.pauseEngine();
       _game.world.pauseTracker();
     } else if (state == AppLifecycleState.resumed) {
@@ -108,7 +112,9 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               game: _game,
               overlayBuilderMap: {
                 'WinDialog': (context, game) => WinDialog(game: game),
-                'DailyCompleteDialog': (context, game) => DailyCompleteDialog(result: game.world.dailyCompletionResult!),
+                'DailyCompleteDialog': (context, game) => DailyCompleteDialog(
+                  result: game.world.dailyCompletionResult!,
+                ),
                 'PotionDiscoveryDialog': (context, game) {
                   final alchemyGame = game;
                   if (alchemyGame.lastDiscoveredPotion == null) {
@@ -148,16 +154,21 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.black54,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.accentGold.withOpacity(0.5)),
+                  border: Border.all(
+                    color: AppTheme.accentGold.withOpacity(0.5),
+                  ),
                 ),
                 child: ValueListenableBuilder<int>(
                   valueListenable: GameManager().currentLevelIndex,
                   builder: (context, index, child) {
-                    final title = widget.gameMode == GameMode.dailyAlchemy 
+                    final title = widget.gameMode == GameMode.dailyAlchemy
                         ? 'DAILY ALCHEMY'
                         : 'LEVEL ${index + 1}';
                     return Text(

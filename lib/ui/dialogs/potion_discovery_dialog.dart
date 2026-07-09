@@ -86,27 +86,27 @@ class _PotionDiscoveryDialogState extends State<PotionDiscoveryDialog>
 
     final potionFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.1, 0.4),
+      curve: const Interval(0.1, 0.3),
     );
     final titleFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.7, 0.85),
+      curve: const Interval(0.4, 0.55),
     );
     final nameFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(0.85, 1.0),
+      curve: const Interval(0.55, 0.7),
     );
     final descFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(1.0, 1.2),
+      curve: const Interval(0.7, 0.85),
     );
     final collectionFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(1.2, 1.4),
+      curve: const Interval(0.85, 0.95),
     );
     final buttonFade = CurvedAnimation(
       parent: _controller,
-      curve: const Interval(1.4, 1.5),
+      curve: const Interval(0.95, 1.0),
     );
 
     final count = PotionCollectionManager().discoveredCount;

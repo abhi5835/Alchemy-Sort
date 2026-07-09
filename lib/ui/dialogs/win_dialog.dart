@@ -249,12 +249,12 @@ class _WinDialogState extends State<WinDialog>
               const SizedBox(height: 32),
 
               // Stats
-              _buildStatRow('SCORE', score.toString(), 0.6),
-              _buildStatRow('COMBO BONUS', '+${stats.comboBonusEarned}', 0.7),
+              _buildStatRow('SCORE', score.toString(), 0.4),
+              _buildStatRow('COMBO BONUS', '+${stats.comboBonusEarned}', 0.55),
               _buildStatRow(
                 'POTIONS COMPLETED',
                 '${stats.solvedPotionCount}',
-                0.8,
+                0.7,
               ),
 
               const SizedBox(height: 40),

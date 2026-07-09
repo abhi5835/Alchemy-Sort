@@ -1,4 +1,1 @@
-enum GameMode {
-  normal,
-  dailyAlchemy,
-}
+enum GameMode { normal, dailyAlchemy }

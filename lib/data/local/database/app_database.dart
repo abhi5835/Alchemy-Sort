@@ -24,8 +24,18 @@ LazyDatabase _openConnection() {
 }
 
 @DriftDatabase(
-  tables: [PlayerProgress, DiscoveredPotions, GameAnalyticsEvents, DailyAlchemyRecords],
-  daos: [PlayerProgressDao, PotionCollectionDao, GameAnalyticsDao, DailyAlchemyDao],
+  tables: [
+    PlayerProgress,
+    DiscoveredPotions,
+    GameAnalyticsEvents,
+    DailyAlchemyRecords,
+  ],
+  daos: [
+    PlayerProgressDao,
+    PotionCollectionDao,
+    GameAnalyticsDao,
+    DailyAlchemyDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

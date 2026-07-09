@@ -12,7 +12,8 @@ class DailyCompleteDialog extends StatefulWidget {
   State<DailyCompleteDialog> createState() => _DailyCompleteDialogState();
 }
 
-class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTickerProviderStateMixin {
+class _DailyCompleteDialogState extends State<DailyCompleteDialog>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -50,7 +51,7 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
   Widget build(BuildContext context) {
     final result = widget.result;
     final isPractice = !result.firstCompletion;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
@@ -63,7 +64,11 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: AppTheme.accentGold, width: 2),
             boxShadow: [
-              BoxShadow(color: AppTheme.accentGold.withOpacity(0.3), blurRadius: 30, spreadRadius: 5),
+              BoxShadow(
+                color: AppTheme.accentGold.withOpacity(0.3),
+                blurRadius: 30,
+                spreadRadius: 5,
+              ),
             ],
           ),
           child: Column(
@@ -71,7 +76,7 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
             children: [
               const Icon(Icons.star, color: AppTheme.accentGold, size: 64),
               const SizedBox(height: 16),
-              
+
               Text(
                 isPractice ? "PRACTICE COMPLETE" : "DAILY ALCHEMY COMPLETE",
                 textAlign: TextAlign.center,
@@ -96,7 +101,7 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
                 }),
               ),
               const SizedBox(height: 24),
-              
+
               FadeTransition(
                 opacity: _fadeAnimation,
                 child: Column(
@@ -104,30 +109,50 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
                     if (!isPractice && result.rewardGranted) ...[
                       const Text(
                         "REWARD EARNED",
-                        style: TextStyle(color: Colors.white70, fontSize: 14, letterSpacing: 1.5),
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         "+${result.reward.totalXp} XP",
-                        style: const TextStyle(color: AppTheme.successGreen, fontSize: 32, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          color: AppTheme.successGreen,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 16),
                       if (result.reward.hasMilestoneBonus) ...[
                         Text(
                           "🔥 ${result.currentStreak} DAY STREAK MILESTONE!",
-                          style: const TextStyle(color: AppTheme.accentOrange, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: AppTheme.accentOrange,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 16),
                       ],
                     ] else if (isPractice) ...[
                       const Text(
                         "PRACTICE REWARD",
-                        style: TextStyle(color: Colors.white70, fontSize: 14, letterSpacing: 1.5),
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          letterSpacing: 1.5,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       const Text(
                         "+0 XP",
-                        style: TextStyle(color: Colors.white38, fontSize: 32, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       const SizedBox(height: 16),
                     ],
@@ -146,9 +171,18 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog> with SingleTi
                           backgroundColor: AppTheme.accentGold,
                           foregroundColor: AppTheme.backgroundDark,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
-                        child: const Text('CONTINUE', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                        child: const Text(
+                          'CONTINUE',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
                       ),
                     ),
                   ],

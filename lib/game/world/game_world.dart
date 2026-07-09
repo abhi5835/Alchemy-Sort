@@ -35,10 +35,7 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   final GameMode gameMode;
   final DailyChallenge? dailyChallenge;
 
-  GameWorld({
-    this.gameMode = GameMode.normal,
-    this.dailyChallenge,
-  });
+  GameWorld({this.gameMode = GameMode.normal, this.dailyChallenge});
 
   late final PourSystem _pourSystem;
   final List<TubeComponent> _tubes = [];
@@ -325,7 +322,9 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   void startTrackingAttempt(int restartCount) {
     _attemptTracker = LevelAttemptTracker(
       sessionId: GameAnalyticsService().generateSessionId(),
-      levelIndex: gameMode == GameMode.dailyAlchemy ? dailyChallenge!.sourceLevelIndex : GameManager().currentLevelIndex.value,
+      levelIndex: gameMode == GameMode.dailyAlchemy
+          ? dailyChallenge!.sourceLevelIndex
+          : GameManager().currentLevelIndex.value,
       restartCount: restartCount,
     );
     if (gameMode == GameMode.normal) {
@@ -429,7 +428,7 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     if (WinCheckSystem.checkWin(_tubes)) {
       _isLevelComplete = true;
       debugPrint("WINNER!");
-      
+
       if (gameMode == GameMode.normal) {
         completionResult = await commitLevelCompletion();
       } else {
@@ -533,9 +532,11 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     final stars = stats.calculateStars();
 
     final repo = DailyAlchemyRepository(GameManager().database);
-    
+
     // Check if it's a practice attempt
-    final record = await GameManager().database.dailyAlchemyDao.getByDateKey(dailyChallenge!.dateKey);
+    final record = await GameManager().database.dailyAlchemyDao.getByDateKey(
+      dailyChallenge!.dateKey,
+    );
     final isPractice = record?.status == DailyChallengeStatus.completed;
 
     final result = await repo.commitDailyCompletion(

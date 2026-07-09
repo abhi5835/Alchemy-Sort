@@ -145,8 +145,8 @@ class GameAnalyticsService {
     try {
       await _db!.gameAnalyticsDao.insertEvent(
         sessionId: tracker.sessionId,
-        eventType: isPractice 
-            ? GameAnalyticsEventType.dailyChallengePracticeCompleted 
+        eventType: isPractice
+            ? GameAnalyticsEventType.dailyChallengePracticeCompleted
             : GameAnalyticsEventType.dailyChallengeCompleted,
         levelIndex: tracker.levelIndex,
         levelNumber: tracker.levelNumber,

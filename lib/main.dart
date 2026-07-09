@@ -52,7 +52,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
       AudioManager().pauseBgm();
     } else if (state == AppLifecycleState.resumed) {
       AudioManager().resumeBgm();

@@ -63,9 +63,17 @@ void main() {
 
     test('7. Source level stays inside safe pool', () {
       for (int i = 0; i < 100; i++) {
-        final c = DailyChallengeGenerator.generate(DateTime(2026, 1, 1).add(Duration(days: i)));
-        expect(c.sourceLevelIndex >= DailyChallengeGenerator.minSourceLevelIndex, isTrue);
-        expect(c.sourceLevelIndex <= DailyChallengeGenerator.maxSourceLevelIndex, isTrue);
+        final c = DailyChallengeGenerator.generate(
+          DateTime(2026, 1, 1).add(Duration(days: i)),
+        );
+        expect(
+          c.sourceLevelIndex >= DailyChallengeGenerator.minSourceLevelIndex,
+          isTrue,
+        );
+        expect(
+          c.sourceLevelIndex <= DailyChallengeGenerator.maxSourceLevelIndex,
+          isTrue,
+        );
       }
     });
   });
@@ -132,23 +140,33 @@ void main() {
 
     test('17. Today completed gives streak 1', () {
       final today = DateTime.now();
-      final streaks = DailyStreakPolicy.calculateStreaks([mockCompletedRecord(today)], today);
+      final streaks = DailyStreakPolicy.calculateStreaks([
+        mockCompletedRecord(today),
+      ], today);
       expect(streaks.currentStreak, 1);
       expect(streaks.longestStreak, 1);
     });
 
-    test('18. Yesterday completed and today incomplete gives active streak 1', () {
-      final today = DateTime.now();
-      final yesterday = today.subtract(const Duration(days: 1));
-      final streaks = DailyStreakPolicy.calculateStreaks([mockCompletedRecord(yesterday)], today);
-      expect(streaks.currentStreak, 1);
-      expect(streaks.longestStreak, 1);
-    });
+    test(
+      '18. Yesterday completed and today incomplete gives active streak 1',
+      () {
+        final today = DateTime.now();
+        final yesterday = today.subtract(const Duration(days: 1));
+        final streaks = DailyStreakPolicy.calculateStreaks([
+          mockCompletedRecord(yesterday),
+        ], today);
+        expect(streaks.currentStreak, 1);
+        expect(streaks.longestStreak, 1);
+      },
+    );
 
     test('19. Two consecutive completed days gives streak 2', () {
       final today = DateTime.now();
       final yesterday = today.subtract(const Duration(days: 1));
-      final streaks = DailyStreakPolicy.calculateStreaks([mockCompletedRecord(today), mockCompletedRecord(yesterday)], today);
+      final streaks = DailyStreakPolicy.calculateStreaks([
+        mockCompletedRecord(today),
+        mockCompletedRecord(yesterday),
+      ], today);
       expect(streaks.currentStreak, 2);
       expect(streaks.longestStreak, 2);
     });
@@ -158,8 +176,11 @@ void main() {
       // Completed 3 days ago, and 4 days ago
       final day3 = today.subtract(const Duration(days: 3));
       final day4 = today.subtract(const Duration(days: 4));
-      
-      final streaks = DailyStreakPolicy.calculateStreaks([mockCompletedRecord(day3), mockCompletedRecord(day4)], today);
+
+      final streaks = DailyStreakPolicy.calculateStreaks([
+        mockCompletedRecord(day3),
+        mockCompletedRecord(day4),
+      ], today);
       expect(streaks.currentStreak, 0); // Broken because yesterday was missed
       expect(streaks.longestStreak, 2); // But longest streak is 2
     });
@@ -167,8 +188,11 @@ void main() {
     test('21. Month boundary remains consecutive', () {
       final today = DateTime(2026, 8, 1); // Aug 1
       final yesterday = DateTime(2026, 7, 31); // Jul 31
-      
-      final streaks = DailyStreakPolicy.calculateStreaks([mockCompletedRecord(today), mockCompletedRecord(yesterday)], today);
+
+      final streaks = DailyStreakPolicy.calculateStreaks([
+        mockCompletedRecord(today),
+        mockCompletedRecord(yesterday),
+      ], today);
       expect(streaks.currentStreak, 2);
     });
   });

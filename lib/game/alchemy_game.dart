@@ -10,10 +10,10 @@ class AlchemyGame extends FlameGame<GameWorld> {
   final GameMode gameMode;
   final DailyChallenge? dailyChallenge;
 
-  AlchemyGame({
-    this.gameMode = GameMode.normal,
-    this.dailyChallenge,
-  }) : super(world: GameWorld(gameMode: gameMode, dailyChallenge: dailyChallenge));
+  AlchemyGame({this.gameMode = GameMode.normal, this.dailyChallenge})
+    : super(
+        world: GameWorld(gameMode: gameMode, dailyChallenge: dailyChallenge),
+      );
 
   @override
   Color backgroundColor() => Colors.transparent;
