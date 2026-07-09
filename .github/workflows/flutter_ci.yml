@@ -34,5 +34,32 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build Android APK
-        run: flutter build apk --release
+      - name: Restore Keystore
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/upload-keystore.jks
+
+      - name: Create key.properties
+        run: |
+          cat <<EOF > android/key.properties
+          storePassword=${{ secrets.ANDROID_STORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=upload-keystore.jks
+          EOF
+
+      - name: Validate Signing Files
+        run: |
+          test -f android/app/upload-keystore.jks
+          test -f android/key.properties
+          echo "Keystore restored successfully"
+          echo "key.properties created successfully"
+
+      - name: Build Android AAB
+        run: flutter build appbundle --release
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: alchemy-sort-release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
