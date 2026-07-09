@@ -25,7 +25,6 @@ void main() async {
   GameAnalyticsService().runDataRetentionCleanup();
 
   await AudioManager().init();
-  AudioManager().playBgm('music/alchemy_theme.mp3');
 
   runApp(const MyApp());
 }

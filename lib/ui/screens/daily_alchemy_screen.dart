@@ -59,6 +59,7 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double buttonWidth = MediaQuery.of(context).size.width;
     if (_isLoading || _challenge == null) {
       return const Scaffold(
         backgroundColor: AppTheme.backgroundDark,
@@ -139,6 +140,7 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.5,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -146,7 +148,7 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
                     style: const TextStyle(
                       color: AppTheme.accentGold,
                       fontFamily: 'Cinzel',
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
@@ -184,9 +186,9 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
                       foregroundColor: isCompleted
                           ? AppTheme.accentGold
                           : AppTheme.backgroundDark,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 48,
-                        vertical: 16,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: buttonWidth * 0.1,
+                        vertical: 20,
                       ),
                       side: isCompleted
                           ? const BorderSide(
@@ -201,10 +203,11 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
                     child: Text(
                       isCompleted ? 'PRACTICE AGAIN' : 'BEGIN ALCHEMY',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
 
@@ -233,23 +236,19 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Flexible(
-          child: Text(
-            label,
-            style: const TextStyle(color: Colors.white70, fontSize: 16),
-          ),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white70, fontSize: 14),
         ),
         const SizedBox(width: 16),
-        Flexible(
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: TextStyle(
-              color: color,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'SourceCodePro',
-            ),
+        Text(
+          value,
+          textAlign: TextAlign.right,
+          style: TextStyle(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'SourceCodePro',
           ),
         ),
       ],

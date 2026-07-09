@@ -2,14 +2,23 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 
 class LiquidLayer extends PositionComponent {
-  final Color liquidColor;
+  Color _liquidColor;
   final bool isBottomLayer;
+  late final Paint _paint;
 
-  LiquidLayer({required this.liquidColor, this.isBottomLayer = false});
+  LiquidLayer({required Color liquidColor, this.isBottomLayer = false})
+    : _liquidColor = liquidColor {
+    _paint = Paint()..color = liquidColor;
+  }
+
+  Color get liquidColor => _liquidColor;
+  set liquidColor(Color value) {
+    _liquidColor = value;
+    _paint.color = value;
+  }
 
   @override
   void render(Canvas canvas) {
-    final paint = Paint()..color = liquidColor;
     final rect = size.toRect();
 
     if (isBottomLayer) {
@@ -20,9 +29,9 @@ class LiquidLayer extends PositionComponent {
         bottomLeft: radius,
         bottomRight: radius,
       );
-      canvas.drawRRect(rrect, paint);
+      canvas.drawRRect(rrect, _paint);
     } else {
-      canvas.drawRect(rect, paint);
+      canvas.drawRect(rect, _paint);
     }
   }
 }

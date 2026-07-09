@@ -104,22 +104,22 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
             ),
 
-            // UI Content
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  const Spacer(),
-                  _buildBottomBar(context),
-                  // const BannerAdWidget(),
-                ],
-              ),
-            ),
-
-            // Game Layer - With padding for UI
+            // Game Layer & UI Overlays
             GameWidget<AlchemyGame>(
               game: _game,
               overlayBuilderMap: {
+                'HUD': (context, game) => SafeArea(
+                  // We use IgnorePointer to let taps pass through empty spaces,
+                  // but wrap the interactive parts with IgnorePointer(ignoring: false) or just let them capture it.
+                  // Actually, Flutter's default HitTestBehavior for Column is deferToChild, so taps naturally pass through.
+                  child: Column(
+                    children: [
+                      _buildHeader(context),
+                      const Spacer(),
+                      _buildBottomBar(context),
+                    ],
+                  ),
+                ),
                 'WinDialog': (context, game) => WinDialog(game: game),
                 'DailyCompleteDialog': (context, game) => DailyCompleteDialog(
                   result: game.world.dailyCompletionResult!,
@@ -135,6 +135,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                   );
                 },
               },
+              initialActiveOverlays: const ['HUD'],
             ),
           ],
         ),

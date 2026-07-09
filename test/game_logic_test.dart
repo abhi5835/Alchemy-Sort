@@ -225,19 +225,19 @@ void main() {
   group('ComboManager Tests', () {
     test('TEST: First successful move sets combo to 1', () {
       final comboManager = ComboManager();
-      comboManager.registerMove();
+      comboManager.registerMove(true);
       expect(comboManager.combo, 1);
       expect(comboManager.calculateBonus(), 0);
     });
 
     test('TEST: Consecutive successful moves increase combo and bonus', () {
       final comboManager = ComboManager();
-      comboManager.registerMove(); // 1
-      comboManager.registerMove(); // 2
+      comboManager.registerMove(true); // 1
+      comboManager.registerMove(true); // 2
       expect(comboManager.combo, 2);
       expect(comboManager.calculateBonus(), 5);
 
-      comboManager.registerMove(); // 3
+      comboManager.registerMove(true); // 3
       expect(comboManager.combo, 3);
       expect(comboManager.calculateBonus(), 10);
     });
@@ -245,7 +245,7 @@ void main() {
     test('TEST: Combo bonus caps at 20', () {
       final comboManager = ComboManager();
       for (int i = 0; i < 10; i++) {
-        comboManager.registerMove();
+        comboManager.registerMove(true);
       }
       expect(comboManager.combo, 10);
       expect(comboManager.calculateBonus(), 20); // Cap is 20
@@ -253,8 +253,8 @@ void main() {
 
     test('TEST: Reset clears combo', () {
       final comboManager = ComboManager();
-      comboManager.registerMove();
-      comboManager.registerMove();
+      comboManager.registerMove(true);
+      comboManager.registerMove(true);
       expect(comboManager.combo, 2);
 
       comboManager.reset();

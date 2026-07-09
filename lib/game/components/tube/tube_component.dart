@@ -3,15 +3,13 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/events.dart';
 import 'dart:math';
+import 'dart:ui';
 import '../../../core/constants/app_constants.dart';
 import '../../alchemy_game.dart';
 import '../liquid/liquid_layer.dart';
 import '../liquid/bubble_particle.dart';
 import 'tube_logic.dart';
 import 'tube_renderer.dart';
-import '../../../core/managers/audio_manager.dart';
-import 'package:flutter/services.dart';
-import '../effects/potion_complete_effect.dart';
 
 class TubeComponent extends PositionComponent
     with TapCallbacks, HasGameReference<AlchemyGame> {
@@ -65,64 +63,44 @@ class TubeComponent extends PositionComponent
   }
 
   void _updateLiquids() {
-    // Clear existing liquid visuals
-    for (final liquid in _liquidComponents) {
-      liquid.removeFromParent();
-    }
-    _liquidComponents.clear();
-
-    // Add liquid layers based on logic
     final liquids = logic.liquids;
-    for (int i = 0; i < liquids.length; i++) {
-      final color = liquids[i];
-      // The first liquid in the list (index 0) is at the bottom.
-      final layer = LiquidLayer(liquidColor: color, isBottomLayer: i == 0);
+    final segmentHeight = AppConstants.liquidSegmentHeight;
 
-      // Calculate position: Bottom-up
-      final segmentHeight = AppConstants.liquidSegmentHeight;
-      // Position is relative to the component top-left.
-      // Tube fills from bottom.
-      // i=0 is bottom-most liquid.
-      // y = height - (i+1)*segmentHeight
-      layer.position = Vector2(0, size.y - (i + 1) * segmentHeight);
-      layer.size = Vector2(size.x, segmentHeight);
-
+    // Create new layers if needed
+    while (_liquidComponents.length < liquids.length) {
+      final isBottomLayer = _liquidComponents.isEmpty;
+      // Start with transparent color, will update below
+      final layer = LiquidLayer(
+        liquidColor: Colors.transparent,
+        isBottomLayer: isBottomLayer,
+      );
       add(layer);
       _liquidComponents.add(layer);
     }
 
-    // Ensure the tube renderer (glass effect) is always on top of liquids
-    if (_renderer.parent != null) {
-      _renderer.removeFromParent();
+    // Remove extra layers if any
+    while (_liquidComponents.length > liquids.length) {
+      final extra = _liquidComponents.removeLast();
+      extra.removeFromParent();
     }
-    add(_renderer);
 
-    // Check for completion animation
-    if (logic.isSolved && !logic.isEmpty) {
-      if (!_wasSolved) {
-        _wasSolved = true;
-        AudioManager().playPotionComplete();
-        HapticFeedback.lightImpact();
+    // Update existing layers
+    for (int i = 0; i < liquids.length; i++) {
+      final layer = _liquidComponents[i];
+      layer.liquidColor = liquids[i];
+      layer.position = Vector2(0, size.y - (i + 1) * segmentHeight);
+      layer.size = Vector2(size.x, segmentHeight);
+    }
 
-        final effect = PotionCompleteEffect();
-        effect.position = Vector2(size.x / 2, size.y / 2);
-        add(effect);
-
-        add(
-          SequenceEffect([
-            ScaleEffect.by(
-              Vector2.all(1.1),
-              EffectController(duration: 0.15, alternate: true),
-            ),
-          ]),
-        );
-      }
+    // Ensure the tube renderer is on top
+    if (_renderer.parent == null) {
+      add(_renderer);
     } else {
-      _wasSolved = false;
+      _renderer.priority = 2; // Bump priority to render above liquids
     }
-  }
 
-  bool _wasSolved = false;
+    // Check for completion animation (handled by GameWorld now, just update state)
+  }
 
   void addLiquid(Color color) {
     logic.addLiquid(color);
@@ -217,19 +195,24 @@ class TubeComponent extends PositionComponent
     add(layer);
     _liquidComponents.add(layer);
 
-    // Re-add renderer on top
-    if (_renderer.parent != null) _renderer.removeFromParent();
-    add(_renderer);
+    // Ensure renderer on top
+    if (_renderer.parent == null) {
+      add(_renderer);
+    } else {
+      _renderer.priority = 2; // Bump priority above liquids
+    }
   }
 
   // Optimized Bubble Spawner
+  static final Random _random = Random();
+
   void spawnBubbles(Color color, int count) {
     for (int i = 0; i < count; i++) {
       final bubble = BubbleParticle(
-        position: Vector2(Random().nextDouble() * size.x, size.y * 0.8),
+        position: Vector2(_random.nextDouble() * size.x, size.y * 0.8),
         color: Colors.white.withValues(alpha: 0.4),
-        speed: 30 + Random().nextDouble() * 40,
-        radius: 1 + Random().nextDouble() * 2,
+        speed: 30 + _random.nextDouble() * 40,
+        radius: 1 + _random.nextDouble() * 2,
         maxLifeTime: 0.6,
       );
       add(bubble);

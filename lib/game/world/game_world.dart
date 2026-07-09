@@ -19,8 +19,10 @@ import '../../core/managers/potion_collection_manager.dart';
 import '../potions/potion_repository.dart';
 import '../../data/repositories/level_completion_repository.dart';
 import '../logic/combo_manager.dart';
-import '../components/effects/combo_text_effect.dart';
+import '../components/effects/combo_feedback_component.dart';
+import '../components/effects/potion_complete_effect.dart';
 import '../components/effects/level_complete_celebration.dart';
+import 'package:flutter/services.dart';
 import '../analytics/game_analytics_service.dart';
 import '../analytics/level_attempt_tracker.dart';
 import '../alchemy_game_mode.dart';
@@ -48,8 +50,7 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   LevelSessionStats get sessionStats => _sessionStats;
 
   final ComboManager _comboManager = ComboManager();
-  late final Timer _comboTimer;
-  ComboTextEffect? _activeComboText;
+  final Set<int> _completedTubeIndices = {};
 
   LevelAttemptTracker? _attemptTracker;
   String? get currentSessionId => _attemptTracker?.sessionId;
@@ -95,22 +96,43 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
 
     _moveHistory.add(record);
 
+    // Determine new completions
+    int newlyCompletedPotions = 0;
+
+    if (source.logic.isSolved &&
+        !source.logic.isEmpty &&
+        !_completedTubeIndices.contains(sourceIndex)) {
+      _completedTubeIndices.add(sourceIndex);
+      newlyCompletedPotions++;
+      _triggerPotionCompletionVisual(source, sourceIndex);
+    }
+
+    if (target.logic.isSolved &&
+        !target.logic.isEmpty &&
+        !_completedTubeIndices.contains(targetIndex)) {
+      _completedTubeIndices.add(targetIndex);
+      newlyCompletedPotions++;
+      _triggerPotionCompletionVisual(target, targetIndex);
+    }
+
+    if (newlyCompletedPotions > 0) {
+      AudioManager().playPotionComplete();
+      HapticFeedback.lightImpact();
+    }
+
     // Combo system
-    _comboManager.registerMove();
-    _comboTimer.start(); // restarts or starts timer for 3s
+    _comboManager.registerMove(newlyCompletedPotions > 0);
 
     int comboBonus = _comboManager.calculateBonus();
     if (comboBonus > 0) {
       GameManager().addScore(comboBonus);
     }
 
-    if (_comboManager.combo >= 2) {
-      if (_activeComboText?.parent != null) {
-        _activeComboText!.removeFromParent();
-      }
-      _activeComboText = ComboTextEffect(combo: _comboManager.combo);
-      _activeComboText!.position = Vector2.zero();
-      add(_activeComboText!);
+    if (_comboManager.combo >= 2 && newlyCompletedPotions > 0) {
+      final comboFeedback = ComboFeedbackComponent(combo: _comboManager.combo);
+      // Place at the center of the screen
+      comboFeedback.position = Vector2.zero();
+      add(comboFeedback);
     }
 
     // Check if the target tube is now completed (full of same color)
@@ -123,6 +145,25 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     _sessionStats.updateHighestCombo(_comboManager.combo);
 
     _attemptTracker?.recordMove();
+  }
+
+  void _triggerPotionCompletionVisual(TubeComponent tube, int tubeIndex) {
+    final effect = PotionCompleteEffect(
+      potionColor: tube.logic.topColor ?? Colors.white,
+    );
+
+    // Add effect to GameWorld directly to ensure it renders above ALL tubes (priority=100)
+    effect.position = tube.positionOfAnchor(Anchor.center);
+    add(effect);
+
+    tube.add(
+      SequenceEffect([
+        ScaleEffect.by(
+          Vector2.all(1.08),
+          EffectController(duration: 0.15, alternate: true),
+        ),
+      ]),
+    );
   }
 
   // Limits
@@ -161,10 +202,15 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
 
       // Reset combo
       _comboManager.reset();
-      _comboTimer.stop();
-      if (_activeComboText?.parent != null) {
-        _activeComboText!.removeFromParent();
-        _activeComboText = null;
+
+      // Revert completions if undone
+      if (!_tubes[record.sourceTubeIndex].logic.isSolved ||
+          _tubes[record.sourceTubeIndex].logic.isEmpty) {
+        _completedTubeIndices.remove(record.sourceTubeIndex);
+      }
+      if (!_tubes[record.targetTubeIndex].logic.isSolved ||
+          _tubes[record.targetTubeIndex].logic.isEmpty) {
+        _completedTubeIndices.remove(record.targetTubeIndex);
       }
 
       // Ensure all tubes are deselected after an undo
@@ -238,19 +284,10 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
   }
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    if (_comboTimer.isRunning()) {
-      _comboTimer.update(dt);
-    }
-  }
-
-  @override
   Future<void> onLoad() async {
     super.onLoad();
 
     // Initialize systems
-    _comboTimer = Timer(3.0, onTick: _comboManager.reset);
 
     _pourSystem = PourSystem(
       onWinCheck: _checkWin,
@@ -281,11 +318,6 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     _moveHistory.clear();
     _sessionStats.reset();
     _comboManager.reset();
-    _comboTimer.stop();
-    if (_activeComboText?.parent != null) {
-      _activeComboText!.removeFromParent();
-      _activeComboText = null;
-    }
     // Clean up old components first
     removeAll(_tubes);
     _tubes.clear();
@@ -306,6 +338,13 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
     final components = LevelLoader.loadLevel(effectiveLevel);
     _tubes.clear();
     _tubes.addAll(components);
+
+    _completedTubeIndices.clear();
+    for (int i = 0; i < _tubes.length; i++) {
+      if (_tubes[i].logic.isSolved && !_tubes[i].logic.isEmpty) {
+        _completedTubeIndices.add(i);
+      }
+    }
 
     // Layout
     _layoutTubes();

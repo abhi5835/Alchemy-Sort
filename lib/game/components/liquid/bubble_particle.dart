@@ -8,6 +8,9 @@ class BubbleParticle extends PositionComponent {
   double _lifeTime = 0;
   final double radius;
   late Paint _paint;
+  static final Random _random = Random();
+  static final Paint _highlightPaint = Paint()
+    ..color = const Color(0xFFFFFFFF).withValues(alpha: 0.4);
 
   BubbleParticle({
     required Vector2 position,
@@ -21,7 +24,7 @@ class BubbleParticle extends PositionComponent {
       ..style = PaintingStyle.fill;
 
     // Randomize horizontal drift slightly
-    _drift = (Random().nextDouble() - 0.5) * 10;
+    _drift = (_random.nextDouble() - 0.5) * 10;
   }
 
   late double _drift;
@@ -55,7 +58,7 @@ class BubbleParticle extends PositionComponent {
     canvas.drawCircle(
       Offset(-radius * 0.3, -radius * 0.3),
       radius * 0.3,
-      Paint()..color = const Color(0xFFFFFFFF).withValues(alpha: 0.4),
+      _highlightPaint,
     );
   }
 }

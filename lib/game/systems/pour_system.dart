@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
@@ -191,22 +192,53 @@ class PourSystem {
     TubeComponent target,
     Color color,
   ) async {
-    const int steps = 10;
-    const double stepDuration = 0.03;
+    final completer = Completer<void>();
+    source.add(
+      _LiquidTransferAnimator(
+        source: source,
+        target: target,
+        color: color,
+        duration: 0.3,
+        completer: completer,
+      ),
+    );
+    return completer.future;
+  }
+}
 
-    for (int i = 1; i <= steps; i++) {
-      double progress = i / steps;
+class _LiquidTransferAnimator extends Component {
+  final TubeComponent source;
+  final TubeComponent target;
+  final Color color;
+  final double duration;
+  final Completer<void> completer;
+  double _elapsed = 0;
+
+  _LiquidTransferAnimator({
+    required this.source,
+    required this.target,
+    required this.color,
+    required this.duration,
+    required this.completer,
+  });
+
+  @override
+  void update(double dt) {
+    _elapsed += dt;
+    if (_elapsed >= duration) {
+      source.updateTopLiquidHeight(0.0);
+      target.updateTopLiquidHeight(1.0);
+      removeFromParent();
+      if (!completer.isCompleted) completer.complete();
+    } else {
+      double progress = _elapsed / duration;
       source.updateTopLiquidHeight(1.0 - progress);
       target.updateTopLiquidHeight(progress);
 
       // Visual splash effect
-      if (i > 2 && i < 8) {
+      if (progress > 0.2 && progress < 0.8 && _elapsed % 0.05 < dt) {
         target.spawnBubbles(color, 1);
       }
-
-      await Future.delayed(
-        Duration(milliseconds: (stepDuration * 1000).toInt()),
-      );
     }
   }
 }

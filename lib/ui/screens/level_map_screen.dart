@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:alchemy_sort/game/levels/level_repository.dart';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
@@ -148,7 +149,9 @@ class LevelMapScreen extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppTheme.surfaceDark,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppTheme.accentGold.withValues(alpha: 0.5)),
+                border: Border.all(
+                  color: AppTheme.accentGold.withValues(alpha: 0.5),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: AppTheme.accentGold.withValues(alpha: 0.1),
@@ -251,6 +254,38 @@ class _MapHeader extends StatelessWidget {
             ),
 
             const Spacer(),
+
+            // Music Button
+            ValueListenableBuilder<bool>(
+              valueListenable: AudioManager().musicEnabledNotifier,
+              builder: (context, isMusicEnabled, child) {
+                return GestureDetector(
+                  onTap: () {
+                    AudioManager().playButtonClick();
+                    unawaited(AudioManager().setMusicEnabled(!isMusicEnabled));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1F2633),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Icon(
+                      isMusicEnabled ? Icons.music_note : Icons.music_off,
+                      color: isMusicEnabled
+                          ? const Color(0xFFFFD700)
+                          : Colors.white54,
+                      size: 20,
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(width: 8),
 
             // Potion Book Button
             GestureDetector(
@@ -376,7 +411,9 @@ class _LevelMapScrollViewState extends State<_LevelMapScrollView> {
     _scrollController = ScrollController();
     // Schedule scroll after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       _scrollToActiveLevel();
+      unawaited(AudioManager().playBgm('music/alchemy_theme.mp3'));
     });
   }
 

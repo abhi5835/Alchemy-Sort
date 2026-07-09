@@ -5,8 +5,12 @@ class ComboManager {
 
   int get combo => _combo;
 
-  void registerMove() {
-    _combo++;
+  void registerMove(bool completedPotion) {
+    if (completedPotion) {
+      _combo++;
+    } else {
+      _combo = 0;
+    }
   }
 
   void reset() {

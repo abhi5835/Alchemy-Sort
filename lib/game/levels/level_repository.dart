@@ -1,13 +1,26 @@
+import 'dart:ui';
 import 'level_model.dart';
 import 'level_generator.dart';
 
 class LevelRepository {
-  // We no longer need the hardcoded _levels list.
+  static final Map<int, LevelModel> _levelCache = {};
 
   static LevelModel getLevel(int index) {
-    // Pro Tip: You could still check a JSON file for "boss levels"
-    // and use the generator for everything else.
-    return LevelGenerator.generate(index);
+    if (!_levelCache.containsKey(index)) {
+      _levelCache[index] = LevelGenerator.generate(index);
+    }
+
+    // Return a deep copy so mutable tube state doesn't pollute the cached immutable definition
+    final cached = _levelCache[index]!;
+    final copiedTubes = cached.tubes
+        .map((tube) => List<Color>.from(tube))
+        .toList();
+
+    return LevelModel(
+      levelNumber: cached.levelNumber,
+      tubes: copiedTubes,
+      palette: List<Color>.from(cached.palette),
+    );
   }
 
   // To support your UI map
