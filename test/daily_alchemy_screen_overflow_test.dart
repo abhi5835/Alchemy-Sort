@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:alchemy_sort/ui/screens/daily_alchemy_screen.dart';
 
 void main() {
   testWidgets('DailyAlchemyScreen does not overflow at narrow widths', (

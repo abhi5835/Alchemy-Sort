@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/components.dart';
@@ -7,7 +6,6 @@ import '../../core/constants/app_constants.dart';
 import '../components/tube/tube_component.dart';
 import '../components/tube/tube_logic.dart';
 import '../levels/level_loader.dart';
-// import '../levels/level_model.dart'; // Unused
 import '../levels/level_repository.dart';
 import '../../core/managers/game_manager.dart';
 import '../systems/pour_system.dart';
@@ -111,7 +109,7 @@ class GameWorld extends World with HasGameReference<AlchemyGame> {
         _activeComboText!.removeFromParent();
       }
       _activeComboText = ComboTextEffect(combo: _comboManager.combo);
-      _activeComboText!.position = Vector2(game.size.x / 2, 80);
+      _activeComboText!.position = Vector2.zero();
       add(_activeComboText!);
     }
 

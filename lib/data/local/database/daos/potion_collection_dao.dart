@@ -7,7 +7,7 @@ part 'potion_collection_dao.g.dart';
 @DriftAccessor(tables: [DiscoveredPotions])
 class PotionCollectionDao extends DatabaseAccessor<AppDatabase>
     with _$PotionCollectionDaoMixin {
-  PotionCollectionDao(AppDatabase db) : super(db);
+  PotionCollectionDao(super.db);
 
   Future<List<DiscoveredPotion>> getAll() {
     return select(discoveredPotions).get();

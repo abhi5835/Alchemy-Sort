@@ -8,7 +8,7 @@ part 'player_progress_dao.g.dart';
 @DriftAccessor(tables: [PlayerProgress])
 class PlayerProgressDao extends DatabaseAccessor<AppDatabase>
     with _$PlayerProgressDaoMixin {
-  PlayerProgressDao(AppDatabase db) : super(db);
+  PlayerProgressDao(super.db);
 
   Future<void> ensurePlayerExists() async {
     final count = await select(playerProgress).get();

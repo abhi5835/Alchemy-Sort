@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 class ComboTextEffect extends PositionComponent {
   final int combo;
 
-  ComboTextEffect({required this.combo}) : super(anchor: Anchor.center);
+  ComboTextEffect({required this.combo}) : super(anchor: Anchor.center) {
+    priority = 100; // Ensure it renders above the tubes
+  }
 
   @override
   Future<void> onLoad() async {

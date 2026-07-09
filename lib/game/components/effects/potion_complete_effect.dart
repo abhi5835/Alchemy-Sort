@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class PotionCompleteEffect extends PositionComponent {
-  PotionCompleteEffect() : super(anchor: Anchor.center);
+  PotionCompleteEffect() : super(anchor: Anchor.center) {
+    priority = 100; // Ensure it renders above the tubes
+  }
 
   @override
   Future<void> onLoad() async {

@@ -109,12 +109,12 @@ class _DailyAlchemyScreenState extends State<DailyAlchemyScreen> {
                 color: AppTheme.surfaceDark,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: AppTheme.accentGold.withOpacity(0.3),
+                  color: AppTheme.accentGold.withValues(alpha: 0.3),
                   width: 2,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppTheme.accentPurple.withOpacity(0.2),
+                    color: AppTheme.accentPurple.withValues(alpha: 0.2),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),

@@ -124,77 +124,9 @@ class LevelMapScreen extends StatelessWidget {
             ),
           ),
 
-          // Daily Alchemy Card
-          Padding(
-            padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
-            child: InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DailyAlchemyScreen()),
-                );
-              },
-              borderRadius: BorderRadius.circular(16),
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: AppTheme.surfaceDark,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppTheme.accentGold.withOpacity(0.5),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.accentGold.withOpacity(0.1),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(20),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome,
-                      color: AppTheme.accentGold,
-                      size: 36,
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'DAILY ALCHEMY',
-                            style: TextStyle(
-                              color: AppTheme.accentGold,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              fontFamily: 'Cinzel',
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            "Today's exclusive challenge",
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(Icons.chevron_right, color: AppTheme.accentGold),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
           // Scrollable Map
           Padding(
-            padding: const EdgeInsets.only(top: 200),
+            padding: const EdgeInsets.only(top: 100),
             child: _LevelMapScrollView(levelCount: levelCount),
           ),
 
@@ -208,6 +140,90 @@ class LevelMapScreen extends StatelessWidget {
           //   right: 0,
           //   child: BannerAdWidget(),
           // ),
+
+          // Daily Alchemy Card
+          Padding(
+            padding: const EdgeInsets.only(top: 100, left: 16, right: 16),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.surfaceDark,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppTheme.accentGold.withValues(alpha: 0.5)),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.accentGold.withValues(alpha: 0.1),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DailyAlchemyScreen(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(16),
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceDark,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppTheme.accentGold.withValues(alpha: 0.5),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.accentGold.withValues(alpha: 0.1),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.auto_awesome,
+                        color: AppTheme.accentGold,
+                        size: 36,
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'DAILY ALCHEMY',
+                              style: TextStyle(
+                                color: AppTheme.accentGold,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.5,
+                                fontFamily: 'Cinzel',
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              "Today's exclusive challenge",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(Icons.chevron_right, color: AppTheme.accentGold),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -309,32 +325,32 @@ class _MapHeader extends StatelessWidget {
             const SizedBox(width: 12),
 
             // Hint Balance
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF1F2633),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.white10),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.lightbulb,
-                    color: Color(0xFFB388FF),
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '3',
-                    style: GoogleFonts.outfit(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            //   decoration: BoxDecoration(
+            //     color: const Color(0xFF1F2633),
+            //     borderRadius: BorderRadius.circular(20),
+            //     border: Border.all(color: Colors.white10),
+            //   ),
+            //   child: Row(
+            //     children: [
+            //       const Icon(
+            //         Icons.lightbulb,
+            //         color: Color(0xFFB388FF),
+            //         size: 16,
+            //       ),
+            //       const SizedBox(width: 8),
+            //       Text(
+            //         '3',
+            //         style: GoogleFonts.outfit(
+            //           color: Colors.white,
+            //           fontSize: 14,
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

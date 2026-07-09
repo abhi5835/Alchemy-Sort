@@ -25,9 +25,7 @@ class LevelAttemptTracker {
   }
 
   void resume() {
-    if (_intervalStart == null) {
-      _intervalStart = DateTime.now();
-    }
+    _intervalStart ??= DateTime.now();
   }
 
   Duration get elapsedDuration {

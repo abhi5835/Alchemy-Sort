@@ -1,5 +1,4 @@
 import '../../game/daily/daily_challenge_generator.dart';
-import '../../game/daily/daily_date_key.dart';
 import '../../game/daily/daily_reward_policy.dart';
 import '../../game/daily/daily_streak_policy.dart';
 import '../../game/models/daily_completion_result.dart';
@@ -41,8 +40,9 @@ class DailyAlchemyRepository {
     return await _db.transaction(() async {
       // 1. Fetch current status
       final record = await _db.dailyAlchemyDao.getByDateKey(dateKey);
-      if (record == null)
+      if (record == null) {
         throw Exception('Daily record not found for $dateKey');
+      }
 
       final firstCompletion = record.status != DailyChallengeStatus.completed;
 

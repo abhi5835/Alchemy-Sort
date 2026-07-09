@@ -65,7 +65,7 @@ class _DailyCompleteDialogState extends State<DailyCompleteDialog>
             border: Border.all(color: AppTheme.accentGold, width: 2),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.accentGold.withOpacity(0.3),
+                color: AppTheme.accentGold.withValues(alpha: 0.3),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../game/alchemy_game.dart';
-import '../../game/world/game_world.dart';
 import '../../game/alchemy_game_mode.dart';
 import '../../game/daily/daily_challenge_generator.dart';
 import '../dialogs/win_dialog.dart';
@@ -12,8 +11,6 @@ import '../dialogs/daily_complete_dialog.dart';
 import '../dialogs/potion_discovery_dialog.dart';
 import '../../core/managers/game_manager.dart';
 import '../../core/theme/app_theme.dart';
-import '../../game/models/level_completion_result.dart';
-import '../../game/models/daily_completion_result.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/managers/audio_manager.dart';
 
@@ -107,6 +104,18 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
               ),
             ),
 
+            // UI Content
+            SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(context),
+                  const Spacer(),
+                  _buildBottomBar(context),
+                  // const BannerAdWidget(),
+                ],
+              ),
+            ),
+
             // Game Layer - With padding for UI
             GameWidget<AlchemyGame>(
               game: _game,
@@ -127,18 +136,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                 },
               },
             ),
-
-            // UI Content
-            SafeArea(
-              child: Column(
-                children: [
-                  _buildHeader(context),
-                  const Spacer(),
-                  _buildBottomBar(context),
-                  // const BannerAdWidget(),
-                ],
-              ),
-            ),
           ],
         ),
       ),
@@ -155,14 +152,14 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
+                  horizontal: 14,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.black54,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: AppTheme.accentGold.withOpacity(0.5),
+                    color: AppTheme.accentGold.withValues(alpha: 0.5),
                   ),
                 ),
                 child: ValueListenableBuilder<int>(
@@ -175,7 +172,7 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
                       title,
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     );
@@ -186,7 +183,6 @@ class _GameScreenState extends State<GameScreen> with WidgetsBindingObserver {
           ),
 
           const SizedBox(height: 20),
-
           // Score Pill
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
