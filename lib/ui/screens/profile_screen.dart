@@ -376,61 +376,6 @@ class ProfileScreen extends StatelessWidget {
                   );
                 },
               ),
-              const Divider(color: Colors.white10, height: 1),
-              ListTile(
-                title: const Text(
-                  'Graphics Quality',
-                  style: TextStyle(color: Colors.white),
-                ),
-                leading: const Icon(Icons.high_quality, color: Colors.white70),
-                trailing: DropdownButton<GraphicsQuality>(
-                  value: settings.graphicsQuality,
-                  dropdownColor: AppTheme.surfaceDark,
-                  underline: const SizedBox(),
-                  style: const TextStyle(color: AppTheme.accentGold),
-                  items: GraphicsQuality.values.map((q) {
-                    return DropdownMenuItem(
-                      value: q,
-                      child: Text(q.name.toUpperCase()),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      AudioManager().playButtonClick();
-                      SettingsManager().updateSettings(
-                        settings.copyWith(graphicsQuality: val),
-                      );
-                    }
-                  },
-                ),
-              ),
-              ListTile(
-                title: const Text(
-                  'Frame Rate',
-                  style: TextStyle(color: Colors.white),
-                ),
-                leading: const Icon(Icons.speed, color: Colors.white70),
-                trailing: DropdownButton<FrameRatePreference>(
-                  value: settings.frameRate,
-                  dropdownColor: AppTheme.surfaceDark,
-                  underline: const SizedBox(),
-                  style: const TextStyle(color: AppTheme.accentGold),
-                  items: FrameRatePreference.values.map((q) {
-                    return DropdownMenuItem(
-                      value: q,
-                      child: Text(q.name.toUpperCase()),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      AudioManager().playButtonClick();
-                      SettingsManager().updateSettings(
-                        settings.copyWith(frameRate: val),
-                      );
-                    }
-                  },
-                ),
-              ),
               const SizedBox(height: 10),
             ],
           ),

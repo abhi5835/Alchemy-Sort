@@ -4,7 +4,7 @@ import 'world/game_world.dart';
 import 'models/potion_definition.dart';
 import 'alchemy_game_mode.dart';
 import 'daily/daily_challenge_generator.dart';
-import 'systems/performance_monitor.dart';
+// import 'systems/performance_monitor.dart';
 
 class AlchemyGame extends FlameGame<GameWorld> {
   PotionDefinition? lastDiscoveredPotion;
@@ -20,7 +20,7 @@ class AlchemyGame extends FlameGame<GameWorld> {
   Future<void> onLoad() async {
     await super.onLoad();
     // Add lightweight debug performance monitor
-    add(PerformanceMonitor());
+    // add(PerformanceMonitor());
   }
 
   @override

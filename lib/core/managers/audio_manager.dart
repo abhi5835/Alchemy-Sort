@@ -94,7 +94,7 @@ class AudioManager {
       FlameAudio.bgm.initialize();
 
       await FlameAudio.audioCache.loadAll([
-        'sfx/select_vial.wav',
+        'sfx/select_vial.mp3',
         'sfx/pour.wav',
         'sfx/potion_complete.wav',
         'sfx/combo.wav',
@@ -103,7 +103,7 @@ class AudioManager {
       ]);
 
       _poolSelectVial = await _createPoolSafely(
-        'sfx/select_vial.wav',
+        'sfx/select_vial.mp3',
         minPlayers: 2,
         maxPlayers: 4,
       );
@@ -253,7 +253,7 @@ class AudioManager {
 
   void playSelectVial() => _playSfx(
     pool: _poolSelectVial,
-    asset: 'sfx/select_vial.wav',
+    asset: 'sfx/select_vial.mp3',
     volume: _volSelectVial,
   );
   void playPour() =>

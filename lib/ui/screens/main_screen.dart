@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
 
     // Start background music once the main menu is reached
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      AudioManager().playBgm('music/alchemy_theme.mp3');
+      AudioManager().playBgm('music/theme_alchemy.mp3');
     });
   }
 

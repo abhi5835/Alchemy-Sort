@@ -330,7 +330,7 @@ class _LevelMapScrollViewState extends State<_LevelMapScrollView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _scrollToActiveLevel();
-      unawaited(AudioManager().playBgm('music/alchemy_theme.mp3'));
+      unawaited(AudioManager().playBgm('music/theme_alchemy.mp3'));
     });
   }
 
